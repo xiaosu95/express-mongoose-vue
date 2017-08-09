@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <button type="button" name="button" class="login">login</button>
+  <button type="button" name="button" class="but">test</button>
+  <button type="button" name="button" class="socket">socket</button>
+</body>
+<script src="http://libs.baidu.com/jquery/1.9.0/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+$(function () {
+  var formdata = new FormData();
+  formdata.append('username', 'xiaosu')
+  formdata.append('password', '212312');
+  $('.but').click(function () {
+    $.ajax({
+      type: 'post',
+      url: 'http://192.168.0.150:3000/user/register',
+      data: {
+        username: 'xiaosu',
+        password: '123124'
+      },
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  })
+  $('.login').click(function () {
+    $.ajax({
+      type: 'post',
+      url: 'http://192.168.0.150:3000/user/login',
+      data: {
+        username: 'xiaosu',
+        password: '123124'
+      },
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  })
+  var socket = io.connect()//与服务器进行连接
+  $('.socket').click(function () {
+    socket.emit('join', 'xiaosu')
+  })
+  socket.on('add', data => {
+    console.log(data)
+  })
+})
+</script>
+</html>
