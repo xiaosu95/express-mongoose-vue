@@ -9,12 +9,12 @@ router.post('/register', (req, res) => {
   Userdb.addUser(params)
   .then(data => {
     res.send({
-      isSuccess: 0,
+      isSuccess: 1,
       msg: '注册成功'
     })
   }, err => {
     res.send({
-      isSuccess: 1,
+      isSuccess: 0,
       msg: err
     })
   })

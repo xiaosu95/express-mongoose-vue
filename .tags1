@@ -1,0 +1,10 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+export	E:\objec\TY-weixin-agent-admin\app\src\components\public.js	/^export const $axios = function (url, data, scb, errcb, config) {$/;"	function	line:8
+logout	E:\objec\TY-weixin-agent-admin\app\src\components\public.js	/^export function logout () {$/;"	function	line:28
+$axios	E:\objec\TY-weixin-agent-admin\app\src\components\public.js	/^  $axios('\/weixin\/agent\/account\/logout', '', function () {$/;"	function	line:29
+dataURItoBlob	E:\objec\TY-weixin-agent-admin\app\src\components\public.js	/^export function dataURItoBlob (base64Data) {$/;"	function	line:37

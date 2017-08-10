@@ -7,6 +7,7 @@ module.exports = function (socketIO) {
     let userList = [];
     socket.on('join', username => {
       user = username;
+      console.log(username)
       userList.push(user)
       socket.join(roomID);
       socketIO.to(roomID).emit('add', username)
