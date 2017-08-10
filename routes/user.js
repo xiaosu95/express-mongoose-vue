@@ -3,17 +3,16 @@ const router = express.Router();
 const Userdb = require('../models/user');
 const sha1 = require('sha1');
 const checkLogin = require('../middlewares/check').checkLogin;
-const multer=require('multer');
-const upload = multer({ dest: 'upload/' });
+const $upload = require('../common/utils').$upload;
 
 // 注册
-router.post('/register', upload.single('avatar'), (req, res) => {
+router.post('/register', $upload('upload/').single('avatar'), (req, res) => {
   const username = req.body.username;
   const nickname = req.body.nickname;
   const password = req.body.password;
   const repassword = req.body.repassword;
   const gender = req.body.gender;
-  const avatar = req.file;
+  const avatar = req.file.path;
   console.log(avatar)
   try {
     if (!(username.length >= 1 && username.length <= 10)) throw new Error('名字请限制在 1-10 个字符');
