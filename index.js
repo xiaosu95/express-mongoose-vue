@@ -22,7 +22,7 @@ db.connection.on('open', () => {
 
 const app = express();
 // 静态资源
-app.use(express.static(path.join(__dirname, 'client/dist')))
+// app.use(express.static(path.join(__dirname, 'client/dist')))
 // 解析postbody参数
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,6 +47,12 @@ const http = require('http').createServer(app);
 http.listen(config.port, () => {
   console.log(`${pkg.name} listening on port ${config.port}`);
 })
+
+//all error中间件
+app.use(function(err, req, res, next) {
+  console.log("Error happens", err.stack);
+});
+
 // socket
 const socketIO = IO.listen(http); // 创建socket服务
 socket(socketIO);

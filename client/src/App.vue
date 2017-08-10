@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <button type="button" name="button" class="login" @click="login">login</button>
+    <!-- <button type="button" name="button" class="login" @click="login">login</button>
     <button type="button" name="button" class="but">test</button>
-    <button type="button" name="button" class="socket" @click="socket">socket</button>
+    <button type="button" name="button" class="socket" @click="socket">socket</button> -->
+    <router-view class="routeView"></router-view>
   </div>
 </template>
 
@@ -50,5 +51,9 @@ export default {
 
 <style lang="scss">
 #app {
+  height: 100%;
+  .routeView {
+    height: 100%;
+  }
 }
 </style>

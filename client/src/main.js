@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-// import router from './router'
+import router from './router'
 import ElementUI from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 import 'element-ui/lib/theme-default/index.css'
@@ -20,20 +20,11 @@ Vue.use(VueLazyload, {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  router,
   template: '<App/>',
   components: { App }
 })
-Vue.filter('adQiniuUrlFilter', function (url, width, height) {
-  if (url.indexOf('mp4') !== -1 && url.indexOf('base64') === -1) {
-    return `${url}?vframe/jpg/offset/7/w/${parseInt(width)}/h/${parseInt(height)}`;
-  } else {
-    return url;
-  }
-})
-Vue.filter('order', function (num) {
-  if (num <= 9) return `NO.0${num}`;
-  else return `NO.${num}`;
-})
+
 Vue.filter('timeFilter', function (val) {
   let date = new Date(val);
   let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
