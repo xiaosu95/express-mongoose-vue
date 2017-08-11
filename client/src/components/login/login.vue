@@ -38,21 +38,46 @@
             <input type="text" placeholder="昵称" v-model="sign.nickname">
             <input type="password" placeholder="密码" v-model="sign.password">
             <input type="password" placeholder="再次输入密码" v-model="sign.repassword">
-            <button class="btn_sign_up" @click="cambiar_sign_up">SIGN UP</button>
+            <div class="gender">
+              <el-radio class="radio" v-model="sign.gender" label="b">男</el-radio>
+              <el-radio class="radio" v-model="sign.gender" label="g">女</el-radio>
+            </div>
+            <div class="avatar">
+              头像:
+              <label>
+                <input type="file" v-show=false @change="choiceImg">
+                <i class="el-icon-plus" v-show="!avatarPre"></i>
+                <img :src="avatarPre" alt="" v-show="avatarPre">
+              </label>
+            </div>
+            <button class="btn_sign_up" @click="signUp">SIGN UP</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <el-dialog title="编辑头像" v-model="avatarEditDig" size="tiny">
+    <div class="avatarEdit">
+      <img :src="avatarEditUrl" class="avatarEditImg" alt="" v-show="false">
+    </div>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="cut">确 定</el-button>
+    </span>
+  </el-dialog>
 </div>
 </template>
 
 <script>
 import API from '@/common/api'
+import utils from '@/common/utils'
 export default {
   name: 'login',
   data () {
     return {
+      avatarEditDig: false,
+      avatarEditUrl: '',
+      avatarPre: '',
       login: {
         username: '',
         password: ''
@@ -61,7 +86,9 @@ export default {
         username: '',
         nickname: '',
         password: '',
-        repassword: ''
+        repassword: '',
+        gender: 'b',
+        avatar: null
       }
     }
   },
@@ -97,6 +124,39 @@ export default {
         document.querySelector('.cont_form_login').style.display = 'none';
       }, 500);
     },
+    choiceImg (e) {          // 选取照片
+      let vm = this;
+      vm.avatarEditDig = true;
+      if (vm.avatarEditUrl) {
+        $('.avatarEditImg').cropper('replace', utils.getUrl(e.target.files[0]));
+        e.target.value = '';
+        return;
+      }
+      vm.avatarEditUrl = utils.getUrl(e.target.files[0]);
+      setTimeout(function () {
+        $('.avatarEditImg').cropper({
+          dragMode: '',
+          strict: false,
+          responsive: true,
+          autoCropArea: 1,
+          dragCrop: false,
+          rotatable: true,
+          aspectRatio: 1,
+          built: function () {
+            e.target.value = '';
+          }
+        });
+      }, 100)
+    },
+    cut () {      // 裁剪
+      this.avatarEditDig = false;
+      this.avatarPre = $('.avatarEditImg').cropper('getCroppedCanvas', {
+        width: 200,
+        height: 200,
+        fillColor: '#fff'
+      }).toDataURL('image/jpeg');
+      this.sign.avatar = utils.dataURItoBlob(this.avatarPre);
+    },
     loginFun () {         // 登录
       let vm = this;
       vm.$axios.post(API.LOGIN, vm.login)
@@ -110,7 +170,18 @@ export default {
     },
     signUp () {         // 注册
       let vm = this;
-      vm.$axios.post(API.REGISTER, vm.sign)
+      if (!(vm.sign.username && vm.sign.password && vm.sign.repassword && vm.sign.nickname && vm.sign.gender && vm.sign.avatar)) {
+        vm.$message.warning('请填写完整信息');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('username', vm.sign.username);
+      formData.append('nickname', vm.sign.nickname);
+      formData.append('password', vm.sign.password);
+      formData.append('repassword', vm.sign.repassword);
+      formData.append('gender', vm.sign.gender);
+      formData.append('avatar', vm.sign.avatar);
+      vm.$axios.post(API.REGISTER, formData)
       .then(data => {
         if (data.data.isSuccess) {
 
@@ -125,10 +196,48 @@ export default {
 
 <style scoped lang="scss">
 #login {
-    font-family: cursive;
+    h2 {
+      font-family: cursive;
+    }
     text-align: center;
     * {
         margin: 0 auto;
+    }
+    .gender {
+      text-align: left;
+      padding: 15px 30px;
+      color: #757575;
+    }
+    .avatar {
+      text-align: left;
+      padding: 0 30px 10px;
+      line-height: 50px;
+      height: 50px;
+      font-size: 14px;
+      i {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        margin-left: 0;
+        color: #505050;
+        width: 50px;
+        height: 50px;
+        font: 30px/50px "";
+        border: 1px #888 dashed;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      img {
+        width: 50px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+    }
+    .avatarEdit {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+      overflow: hidden;
     }
     .cotn_principal {
         position: absolute;
@@ -204,7 +313,7 @@ export default {
 
     .cont_forms_active_sign_up {
         box-shadow: 1px 10px 30px -10px rgba(0,0,0,0.5);
-        height: 420px;
+        height: 520px;
         top: 20px;
         left: 320px;
         -webkit-transition: all 0.5s;

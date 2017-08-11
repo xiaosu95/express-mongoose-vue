@@ -23,10 +23,11 @@ db.connection.on('open', () => {
 const app = express();
 // 静态资源
 // app.use(express.static(path.join(__dirname, 'client/dist')))
+app.use(express.static(path.join(__dirname, 'uploads')))
 // 解析postbody参数
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// cookie
+// cookie 中间件
 app.use(cookieParser());
 // session 中间件
 app.use(session({
@@ -51,6 +52,10 @@ http.listen(config.port, () => {
 //all error中间件
 app.use(function(err, req, res, next) {
   console.log("Error happens", err.stack);
+  res.send({
+    isSuccess: 0,
+    msg: err.message
+  })
 });
 
 // socket

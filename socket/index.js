@@ -1,3 +1,4 @@
+
 module.exports = function (socketIO) {
   socketIO.on('connection', socket => {
     const url = socket.request.headers.referer;
