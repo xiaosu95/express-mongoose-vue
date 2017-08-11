@@ -22,7 +22,7 @@ db.connection.on('open', () => {
 
 const app = express();
 // 静态资源
-// app.use(express.static(path.join(__dirname, 'client/dist')))
+app.use(express.static(path.join(__dirname, 'client/src')))
 app.use(express.static(path.join(__dirname, 'uploads')))
 // 解析postbody参数
 app.use(bodyParser.json());

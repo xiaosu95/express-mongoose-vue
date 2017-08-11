@@ -34,11 +34,11 @@ userSchema.statics.getFriends = function (user) {
     self.find({}, 'username nickname avatar gender friends').then(data => {
       resolve({
         allPeople: data,
-        friends: data.filter(ele => ele.username === user.username)[0].friends
+        friends: data.filter(ele => ele.username === user)[0].friends
       })
     }, () => {
       reject('系统错误');
     })
-  }
+  })
 }
 const User = module.exports = mongoose.model('User', userSchema, 'users');

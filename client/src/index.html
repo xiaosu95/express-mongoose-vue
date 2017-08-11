@@ -46,9 +46,12 @@ $(function () {
   })
   var socket = io.connect()//与服务器进行连接
   $('.socket').click(function () {
-    socket.emit('join', 'xiaosu')
+    socket.emit('join', 'xiaosu2')
   })
   socket.on('add', data => {
+    console.log(data)
+  })
+  socket.on('getFriends', data => {
     console.log(data)
   })
 })

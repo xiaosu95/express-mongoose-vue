@@ -92,6 +92,9 @@ export default {
       }
     }
   },
+  mounted () {
+
+  },
   methods: {
     cambiar_login () {
       document.querySelector('.cont_forms').className = 'cont_forms cont_forms_active_login';
