@@ -6,7 +6,8 @@ let userSchema = mongoose.Schema({
   nickname: String,
   gender: String,
   avatar: String,
-  friends: Array
+  friends: Array,
+  status: String
 })
 // 数据库添加用户
 userSchema.statics.addUser = function (user) {
@@ -32,8 +33,12 @@ userSchema.statics.getFriends = function (user) {
   const self = this;
   return new Promise(function(resolve, reject) {
     self.find({}, 'username nickname avatar gender friends').then(data => {
+      const allPeople = data.map(ele => {
+        delete ele.friends;
+        return ele
+      });
       resolve({
-        allPeople: data,
+        allPeople: allPeople,
         friends: data.filter(ele => ele.username === user)[0].friends
       })
     }, () => {
