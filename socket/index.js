@@ -5,12 +5,11 @@ module.exports = function (socketIO) {
     const url = socket.request.headers.referer;
     const splited = url.split('/');
     const roomID = 1231;
-    let user = '';
     let userList = [];
     socket.on('join', username => {
-      arrList[username] = socket;
-      user = username;
-      userList.push(user)
+      socket.username = username;         // 添加用户名属性
+      arrList[username] = socket;         // 存储用户
+      userList.push(username)             // 将用户添加进聊天组
       socket.join(roomID);
       socketIO.to(roomID).emit('add', username);
       Userdb.getFriends(username).then(data => {
@@ -20,10 +19,13 @@ module.exports = function (socketIO) {
     socket.on('message', msg => {
 
     })
-  })
-  socketIO.on('disconnect', socket => {     // 客户端与服务端断开
-    Userdb.getFriends(username).then(data => {
-      socketIO.emit('getFriends', data)
+    socket.on('disconnect', function(){           // 用户下线
+      Userdb.getFriends(socket.username).then(data => {
+        Userdb.changeStatus(socket.username, 'offline').then(() => {
+          socketIO.emit('getFriends', data);
+          console.log(`${socket.username}离开了聊天室`);
+        })
+      })
     })
   })
 }

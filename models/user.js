@@ -32,15 +32,33 @@ userSchema.statics.addUser = function (user) {
 userSchema.statics.getFriends = function (user) {
   const self = this;
   return new Promise(function(resolve, reject) {
-    self.find({}, 'username nickname avatar gender friends').then(data => {
+    self.find({}, 'username nickname avatar gender status friends').then(data => {
       const allPeople = data.map(ele => {
-        delete ele.friends;
-        return ele
+        return {
+          username: ele.username,
+          nickname: ele.nickname,
+          avatar: ele.avatar,
+          gender: ele.gender,
+          status: ele.status
+        }
       });
       resolve({
         allPeople: allPeople,
         friends: data.filter(ele => ele.username === user)[0].friends
       })
+    }, () => {
+      reject('系统错误');
+    })
+  })
+}
+// 修改用户的状态
+userSchema.statics.changeStatus = function (user, status) {
+  const self = this;
+  return new Promise(function(resolve, reject) {
+    let oldValue = {username: user};
+    let newValue = {username: user, status: status};
+    self.update(oldValue, newValue).then(data => {
+      resolve()
     }, () => {
       reject('系统错误');
     })
