@@ -165,7 +165,8 @@ export default {
       vm.$axios.post(API.LOGIN, vm.login)
       .then(data => {
         if (data.data.isSuccess) {
-
+          sessionStorage.setItem('user', JSON.stringify(data.data.data));
+          vm.$router.push({name: 'Chat'});
         } else {
           vm.$message.warning(data.data.msg);
         }
@@ -187,7 +188,8 @@ export default {
       vm.$axios.post(API.REGISTER, formData)
       .then(data => {
         if (data.data.isSuccess) {
-
+          sessionStorage.setItem('user', JSON.stringify(data.data.data));
+          vm.$router.push({name: 'Chat'});
         } else {
           vm.$message.warning(data.data.msg);
         }

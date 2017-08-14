@@ -7,7 +7,7 @@ import ElementUI from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 import 'element-ui/lib/theme-default/index.css'
 import Axios from 'axios'
-// import store from './store/index.js'
+import store from './store/index.js'
 
 Vue.use(ElementUI)
 Vue.prototype.$axios = Axios
@@ -21,6 +21,7 @@ Vue.use(VueLazyload, {
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })
