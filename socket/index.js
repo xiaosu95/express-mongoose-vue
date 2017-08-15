@@ -1,6 +1,6 @@
 const Userdb = require('../models/user');
 module.exports = function (socketIO) {
-  let arrList = {};
+  let socketList = {};
   socketIO.on('connection', socket => {         // 客户端与服务端连接
     const url = socket.request.headers.referer;
     const splited = url.split('/');
@@ -8,16 +8,20 @@ module.exports = function (socketIO) {
     let userList = [];
     socket.on('join', username => {
       socket.username = username;         // 添加用户名属性
-      arrList[username] = socket;         // 存储用户
+      socketList[username] = socket;         // 存储用户
       userList.push(username)             // 将用户添加进聊天组
       socket.join(roomID);
       socketIO.to(roomID).emit('add', username);
-      Userdb.getFriends(username).then(data => {
-        socketIO.emit('getFriends', data);         // 获取好友列表
+      Userdb.changeStatus(username, 'online').then(() => {
+        Userdb.getFriends(username).then(data => {
+          socketIO.emit('getFriends', data);         // 获取好友列表
+        })
       })
     })
-    socket.on('message', msg => {
-
+    socket.on('clientSend', data => {     // 接收客户端发来的消息
+      data.time = new Date().toLocaleTimeString();
+      if (data.targetName === 'all') socketIO.to(roomID).emit('serverSend', data);
+      else socketList[data.targetName].emit('serverSend', data);
     })
     socket.on('disconnect', function(){           // 用户下线
       Userdb.getFriends(socket.username).then(data => {

@@ -19,29 +19,7 @@ export default {
   components: {
 
   },
-  created () {
-    this.sockets = io.connect() // 与服务器进行连接
-    this.sockets.on('add', data => {
-      console.log(data)
-    })
-  },
   methods: {
-    login () {
-      $.ajax({
-        type: 'post',
-        url: '/user/register',
-        data: {
-          username: 'xiaosu',
-          password: '123124'
-        },
-        success: function (data) {
-          console.log(data)
-        }
-      })
-    },
-    socket () {
-      this.sockets.emit('join', 'xiaosu')
-    }
   },
   computed: {
 

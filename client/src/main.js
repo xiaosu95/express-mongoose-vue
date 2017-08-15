@@ -22,7 +22,7 @@ new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>',
+  template: '<app/>',
   components: { App }
 })
 

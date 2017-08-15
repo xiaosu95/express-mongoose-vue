@@ -1,5 +1,8 @@
-body, dl, dd, h1, h2, h3, h4, h5, h6, p, form{
+body, dl, dd, h1, h2, h3, h4, h5, h6, p, form, pre, cite{
   margin:0;
+}
+pre {
+  font-family: inherit;
 }
 i,em,strong,b,u{font-style:normal;font-weight:normal; text-decoration: none;}
 ol, ul, li{
@@ -37,4 +40,17 @@ tbody tr {
   line-height: 0;
   clear: both;
   display: block;
+}
+@media (-webkit-max-device-pixel-ratio: 1){      /*美化滚动条*/
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 0;
+  }
+  ::-webkit-scrollbar-thumb {
+    /*background-color: #F90;
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%, transparent 75%, transparent);*/
+    background-color: #c2c2c2;
+    background-clip: padding-box;
+    min-height: 28px;
+  }
 }
