@@ -64,4 +64,6 @@ userSchema.statics.changeStatus = function (user, status) {
     })
   })
 }
+
+// 添加好友
 const User = module.exports = mongoose.model('User', userSchema, 'users');

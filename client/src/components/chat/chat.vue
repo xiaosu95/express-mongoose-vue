@@ -32,17 +32,16 @@
         <h3>{{nowChater.nickname}}{{nowChater.username=='all' ? `(${userList.allPeople.length})` : ''}}</h3>
         <section>
           <ul>
-            <p class="time">123</p>
-            <li v-for="item in chatRecord[nowChater.username]" class="clear">
-              <img :src="item.avatar" alt="">
-              <div>
-                {{item.msg}}
+            <li v-for="(item, $index) in chatRecord[nowChater.username]" class="clear" :class="{right: item.messenger == userInfo.username}">
+              <p class="time" v-if="isShowTime($index)">{{new Date(item.time).toLocaleTimeString()}}</p>
+              <img :src="item.messengerAvatar" alt="">
+              <div v-html="item.msg">
               </div>
             </li>
           </ul>
           <div class="send">
             <!-- <pre contenteditable=true v-model="message"></pre> -->
-            <v-editText v-model="message" class="editText"></v-editText>
+            <v-editText v-model="message" class="editText" @enter="send"></v-editText>
             <div class="butBox">
               <span>按下Ctrl+Enter换行</span>
               <el-button class="sendBut" @click="send">发送</el-button>
@@ -51,6 +50,7 @@
         </section>
       </div>
     </div>
+    <span v-show="false">{{flag}}</span>
   </div>
 </template>
 
@@ -66,7 +66,9 @@ export default {
     return {
       socket: null,
       menuNmae: 'first',
-      message: ''
+      message: '',
+      showTimeInterval: 5 * 1000 * 60,     // 显示时间线的间隔
+      flag: true        // 协助刷新dom
     }
   },
   created () {
@@ -78,14 +80,18 @@ export default {
     })
     this.socket.emit('join', vm.userInfo.username);
     this.socket.on('getFriends', data => {
+      console.log(data)
       vm.getUserList(data);
     })
     this.socket.on('serverSend', data => {
-      // console.log(data);
-      // vm.addChatRecord({
-      //   username: vm.nowChater.username,
-      //   data: data
-      // })
+      vm.addChatRecord({
+        username: vm.nowChater.username,
+        data: data
+      });
+      vm.flag = !vm.flag;
+      vm.$nextTick(function () {
+        vm.$el.querySelector('.chatPanel ul').scrollTop = vm.$el.querySelector('.chatPanel ul').scrollHeight;
+      })
     })
   },
   methods: {
@@ -103,7 +109,6 @@ export default {
       }
     },
     send () {
-      let vm = this;
       this.socket.emit('clientSend', {
         targetName: this.nowChater.username,
         msg: this.message,
@@ -111,15 +116,11 @@ export default {
         messengerAvatar: this.userInfo.avatar
       });
       this.message = '';
-      vm.addChatRecord({
-        username: vm.nowChater.username,
-        data: {
-          targetName: this.nowChater.username,
-          msg: this.message,
-          messenger: this.userInfo.username,
-          messengerAvatar: this.userInfo.avatar
-        }
-      })
+    },
+    isShowTime (idx) {     // 是否显示时间
+      if (idx === 0) return 'true';
+      else if (new Date(this.chatRecord[this.nowChater.username][idx].time) - new Date(this.chatRecord[this.nowChater.username][idx - 1].time) > this.showTimeInterval) return true;
+      else return false;
     }
   },
   computed: mapState({
@@ -240,6 +241,7 @@ export default {
               border-radius: 4px;
               font-size: 14px;
               color: #333;
+              white-space: pre-line;
               &:before {
                 content: "";
                 display: block;

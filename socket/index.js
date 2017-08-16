@@ -11,7 +11,6 @@ module.exports = function (socketIO) {
       socketList[username] = socket;         // 存储用户
       userList.push(username)             // 将用户添加进聊天组
       socket.join(roomID);
-      socketIO.to(roomID).emit('add', username);
       Userdb.changeStatus(username, 'online').then(() => {
         Userdb.getFriends(username).then(data => {
           socketIO.emit('getFriends', data);         // 获取好友列表
@@ -19,13 +18,16 @@ module.exports = function (socketIO) {
       })
     })
     socket.on('clientSend', data => {     // 接收客户端发来的消息
-      data.time = new Date().toLocaleTimeString();
+      data.time = new Date();
       if (data.targetName === 'all') socketIO.to(roomID).emit('serverSend', data);
       else socketList[data.targetName].emit('serverSend', data);
     })
+    socket.on('addFriend', data => {
+
+    })
     socket.on('disconnect', function(){           // 用户下线
-      Userdb.getFriends(socket.username).then(data => {
-        Userdb.changeStatus(socket.username, 'offline').then(() => {
+      Userdb.changeStatus(socket.username, 'offline').then(() => {
+        Userdb.getFriends(socket.username).then(data => {
           socketIO.emit('getFriends', data);
           console.log(`${socket.username}离开了聊天室`);
         })
