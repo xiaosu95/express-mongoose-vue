@@ -5,6 +5,9 @@
         <div class="portrait">
           <img :src="userInfo.avatar" alt="">
           <span>{{userInfo.nickname}}</span>
+          <div class="Notice" @click="systemNoticeDig = true">
+            <el-badge is-dot class="badge"><i class="iconfont icon-xiaoxi"></i></el-badge>
+          </div>
         </div>
         <el-tabs v-model="menuNmae" @tab-click="handleClick">
           <el-tab-pane label="用户管理" name="first">
@@ -21,7 +24,7 @@
                 <img :src="item.avatar">
                 <span>{{item.nickname}}</span>
                 <el-tooltip class="item" effect="dark" content="添加好友" placement="top-start">
-                  <i class="el-icon-plus addFriendBut"></i>
+                  <i class="el-icon-plus addFriendBut" @click="addFriend(item)" v-show="item.status != 'wait'"></i>
                 </el-tooltip>
               </li>
             </ul>
@@ -50,6 +53,26 @@
         </section>
       </div>
     </div>
+
+    <el-dialog title="系统消息" v-model="systemNoticeDig" size="tiny" class="systemNoticeDig">
+      <ul>
+        <li class="addfriend" v-for="item in 5">
+          <h6>
+            <img src="" alt="">
+            好友请求
+          </h6>
+          <p>回复说法按实际发生</p>
+          <div class="butBox">
+            <el-button type="danger" size="mini">拒绝</el-button>
+            <el-button size="mini">同意</el-button>
+          </div>
+        </li>
+      </ul>
+      <!-- <span slot="footer" class="dialog-footer">
+        <el-button @click="systemNoticeDig = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span> -->
+    </el-dialog>
     <span v-show="false">{{flag}}</span>
   </div>
 </template>
@@ -67,6 +90,7 @@ export default {
       socket: null,
       menuNmae: 'first',
       message: '',
+      systemNoticeDig: false,              // 系统消息
       showTimeInterval: 5 * 1000 * 60,     // 显示时间线的间隔
       flag: true        // 协助刷新dom
     }
@@ -78,6 +102,7 @@ export default {
       vm.$message.error('请先登录');
       vm.$router.push({name: 'Login'});
     })
+    this.getSystemNotice();
     this.socket.emit('join', vm.userInfo.username);
     this.socket.on('getFriends', data => {
       console.log(data)
@@ -93,12 +118,21 @@ export default {
         vm.$el.querySelector('.chatPanel ul').scrollTop = vm.$el.querySelector('.chatPanel ul').scrollHeight;
       })
     })
+    this.socket.on('systemNotice', data => {
+      console.log(data)
+      vm.$notify.info({
+        title: '消息',
+        message: `${data.nickname}想加你为好友`
+      });
+    })
   },
   methods: {
     ...mapMutations([
       'getUserList',
       'setNowChater',
-      'addChatRecord'
+      'addChatRecord',
+      'addFriend',
+      'getSystemNotice'
     ]),
     handleClick (tab) {
       if (tab.name === 'second') {
@@ -157,6 +191,7 @@ export default {
       .portrait {
         height: 76px;
         line-height: 76px;
+        position: relative;
         img {
           display: inline-block;
           width: 40px;
@@ -167,6 +202,21 @@ export default {
         span {
           color: #fff;
           font-size: 18px;
+        }
+        .Notice {
+          position: absolute;
+          width: 30px;
+          height: 30px;
+          top: 15px;
+          right: 0;
+          line-height: 30px;
+          cursor: pointer;
+          i {
+            color: #fff;
+            font-size: 24px;
+            opacity: 0.8;
+            &:hover{ opacity: 1;}
+          }
         }
       }
       .user {
@@ -294,6 +344,35 @@ export default {
             margin: 0 20px;
           }
         }
+      }
+    }
+  }
+  .systemNoticeDig {
+    ul {
+      max-height: 500px;
+      overflow: auto;
+      padding-right: 5px;
+    }
+    li {
+      border-bottom: 1px #efefef solid;
+      margin-bottom: 10px;
+      h6 {
+        font: 14px/40px "微软雅黑";
+        img {
+          width: 40px;
+          height: 40px;
+          border: 1px #eee solid;
+          border-radius: 50%;
+          vertical-align: middle;
+          margin-right: 5px;
+        }
+      }
+      p {
+        font: 12px/24px "";
+      }
+      .butBox {
+        padding: 10px 0;
+        text-align: right;
       }
     }
   }

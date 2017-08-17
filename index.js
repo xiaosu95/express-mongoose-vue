@@ -63,7 +63,7 @@ app.use(function(err, req, res, next) {
 
 // socket
 const socketIO = IO.listen(http); // 创建socket服务
-socket(socketIO);
+socket.socket(socketIO);
 socketIO.set('authorization', (handshakeData, accept) => {
   let cookies = cookie.parse(handshakeData.headers.cookie); // 解析cookies
   let connectSid = cookies.session;

@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
-
-let userSchema = mongoose.Schema({
+// const Information = require('./information');
+const Schema = mongoose.Schema
+let userSchema = new Schema({
   username: String,
   password: String,
   nickname: String,
   gender: String,
   avatar: String,
   friends: Array,
-  status: String
+  status: String,
+  id: Schema.Types.ObjectId,
+  information: Schema.Types.ObjectId
 })
 // 数据库添加用户
 userSchema.statics.addUser = function (user) {

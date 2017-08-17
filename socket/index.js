@@ -1,6 +1,6 @@
 const Userdb = require('../models/user');
-module.exports = function (socketIO) {
-  let socketList = {};
+let socketList = {};
+exports.socket = function (socketIO) {
   socketIO.on('connection', socket => {         // 客户端与服务端连接
     const url = socket.request.headers.referer;
     const splited = url.split('/');
@@ -35,3 +35,5 @@ module.exports = function (socketIO) {
     })
   })
 }
+
+exports.socketList = socketList;
