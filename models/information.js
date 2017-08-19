@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
 
 informationSchema = mongoose.Schema({
-  requestAddList: Array,
   username: String,
-  systemNotice: Array
+  initiator: String,
+  createTime: String,
+  type: String,
+  msg: String,
+  initiatorAvatar: String
 });
 
 // 添加addFriend信息
-informationSchema.statics.addFriendMsg = function (Initiator, targetUser) {
-  const self = this;
-  self.findOne({username: targetUser}).exec()
-}
+// informationSchema.statics.addMsg = function () {
+//
+// }
 
 module.exports = mongoose.model('Information', informationSchema, 'information');

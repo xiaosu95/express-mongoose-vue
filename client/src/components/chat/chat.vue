@@ -5,14 +5,14 @@
         <div class="portrait">
           <img :src="userInfo.avatar" alt="">
           <span>{{userInfo.nickname}}</span>
-          <div class="Notice" @click="systemNoticeDig = true">
-            <el-badge is-dot class="badge"><i class="iconfont icon-xiaoxi"></i></el-badge>
+          <div class="Notice" @click="systemNoticeDig = true; clearSystemNotice()">
+            <el-badge is-dot class="badge" :hidden="!systemNotice.length"><i class="iconfont icon-xiaoxi"></i></el-badge>
           </div>
         </div>
         <el-tabs v-model="menuNmae" @tab-click="handleClick">
           <el-tab-pane label="用户管理" name="first">
             <ul class="user">
-              <li v-for="item in userList.friends" @click="setNowChater(item)">
+              <li v-for="item in userList.friends" @click="setNowChater(item)" v-if="item.type == 'normal'">
                 <img :src="item.avatar" alt="" :class="{'offline': item.status == 'offline'}">
                 <span>{{item.nickname}}</span>
               </li>
@@ -23,7 +23,7 @@
               <li v-for="item in userList.allPeople" v-if="item.status == 'online'">
                 <img :src="item.avatar">
                 <span>{{item.nickname}}</span>
-                <el-tooltip class="item" effect="dark" content="添加好友" placement="top-start">
+                <el-tooltip class="item" effect="dark" content="添加好友" placement="top-start" v-if="!friendsList.includes(item.username)">
                   <i class="el-icon-plus addFriendBut" @click="addFriend(item)" v-show="item.status != 'wait'"></i>
                 </el-tooltip>
               </li>
@@ -56,15 +56,15 @@
 
     <el-dialog title="系统消息" v-model="systemNoticeDig" size="tiny" class="systemNoticeDig">
       <ul>
-        <li class="addfriend" v-for="item in 5">
+        <li class="addfriend" v-for="item in systemNotice">
           <h6>
-            <img src="" alt="">
-            好友请求
+            <img :src="item.initiatorAvatar" alt="">
+            {{item.initiator}}
           </h6>
-          <p>回复说法按实际发生</p>
-          <div class="butBox">
-            <el-button type="danger" size="mini">拒绝</el-button>
-            <el-button size="mini">同意</el-button>
+          <p>{{item.type == 'addFriend' ? `${item.initiator}想加你为好友` : item.msg}}</p>
+          <div class="butBox" v-if="item.type == 'addFriend'">
+            <el-button type="danger" size="mini" @click="item.status = false; verification(item)">拒绝</el-button>
+            <el-button size="mini" @click="item.status = true; verification(item)">同意</el-button>
           </div>
         </li>
       </ul>
@@ -95,7 +95,7 @@ export default {
       flag: true        // 协助刷新dom
     }
   },
-  created () {
+  mounted () {
     let vm = this;
     this.socket = io.connect() // 与服务器进行连接
     this.socket.on('error', () => {        // 连接失败
@@ -105,13 +105,12 @@ export default {
     this.getSystemNotice();
     this.socket.emit('join', vm.userInfo.username);
     this.socket.on('getFriends', data => {
-      console.log(data)
       vm.getUserList(data);
     })
     this.socket.on('serverSend', data => {
       vm.addChatRecord({
-        username: vm.nowChater.username,
-        data: data
+        messager: data.messager,
+        data: data.data
       });
       vm.flag = !vm.flag;
       vm.$nextTick(function () {
@@ -119,7 +118,6 @@ export default {
       })
     })
     this.socket.on('systemNotice', data => {
-      console.log(data)
       vm.$notify.info({
         title: '消息',
         message: `${data.nickname}想加你为好友`
@@ -132,7 +130,9 @@ export default {
       'setNowChater',
       'addChatRecord',
       'addFriend',
-      'getSystemNotice'
+      'getSystemNotice',
+      'clearSystemNotice',
+      'verification'
     ]),
     handleClick (tab) {
       if (tab.name === 'second') {
@@ -163,7 +163,9 @@ export default {
     ]),
     userList: state => state.chat.userList,
     nowChater: state => state.chat.nowChater,
-    chatRecord: state => state.chat.chatRecord
+    chatRecord: state => state.chat.chatRecord,
+    friendsList: state => state.chat.userList.friends.map(ele => ele.username),       // 好友username列表
+    systemNotice: state => state.chat.systemNotice        // 系统消息
   })
 }
 </script>

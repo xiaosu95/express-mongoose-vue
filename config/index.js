@@ -7,7 +7,7 @@ module.exports = {
     index: path.resolve(__dirname, '../client/dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../client/dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: 'http://192.168.0.150:3000',
+    assetsPublicPath: 'http://18k07483o3.imwork.net:17503/',
     // assetsPublicPath: 'http://www.tuyaji.cn/agent/',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as

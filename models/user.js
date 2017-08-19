@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-// const Information = require('./information');
 const Schema = mongoose.Schema
+// const Information = require('./information');
 let userSchema = new Schema({
   username: String,
   password: String,
@@ -35,7 +35,7 @@ userSchema.statics.addUser = function (user) {
 userSchema.statics.getFriends = function (user) {
   const self = this;
   return new Promise(function(resolve, reject) {
-    self.find({}, 'username nickname avatar gender status friends').then(data => {
+    self.find({status: 'online'}, 'username nickname avatar gender status friends').then(data => {
       const allPeople = data.map(ele => {
         return {
           username: ele.username,
