@@ -39,3 +39,9 @@ exports.getFileType = function (file) {
 	}
 	return aggregate[file]
 }
+
+// 删除数组中的某个元素
+exports.deleteArray = function (arr, item) {
+	let idx = arr.indexOf(item);
+	idx != -1 && arr.splice(idx, 1);
+}

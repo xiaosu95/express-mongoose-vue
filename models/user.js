@@ -8,6 +8,7 @@ let userSchema = new Schema({
   gender: String,
   avatar: String,
   friends: Array,
+  waitFriends: Array,
   status: String,
   id: Schema.Types.ObjectId,
   information: Schema.Types.ObjectId
@@ -35,22 +36,19 @@ userSchema.statics.addUser = function (user) {
 userSchema.statics.getFriends = function (user) {
   const self = this;
   return new Promise(function(resolve, reject) {
-    self.find({status: 'online'}, 'username nickname avatar gender status friends').then(data => {
-      const allPeople = data.map(ele => {
-        return {
-          username: ele.username,
-          nickname: ele.nickname,
-          avatar: ele.avatar,
-          gender: ele.gender,
-          status: ele.status
-        }
-      });
-      resolve({
-        allPeople: allPeople,
-        friends: data.filter(ele => ele.username === user)[0].friends
-      })
-    }, () => {
-      reject('系统错误');
+    self.findOne({username: user})
+    .exec((err, userInfo) => {
+      if (err) reject('系统错误');
+      else {
+        self.find({username: {$ne: user}}, 'username nickname avatar gender status').then(data => {
+          resolve({
+            allPeople: data.filter(ele => ![...userInfo.friends, ...userInfo.waitFriends].includes(ele.username)),
+            friends: data.filter(ele => userInfo.friends.includes(ele.username))
+          })
+        }, () => {
+          reject('系统错误');
+        })
+      }
     })
   })
 }

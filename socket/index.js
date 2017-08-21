@@ -41,10 +41,11 @@ exports.socket = function (socketIO) {
     })
     socket.on('disconnect', function(){           // 用户下线
       Userdb.changeStatus(socket.username, 'offline').then(() => {
-        Userdb.getFriends(socket.username).then(data => {
-          socketIO.emit('getFriends', data);
-          console.log(`${socket.username}离开了聊天室`);
-        })
+        for (let key in socketList) {
+          Userdb.getFriends(socketList[key].username).then(data => {
+            socketList[key].emit('getFriends', data);         // 获取好友列表
+          })
+        }
       })
     })
   })

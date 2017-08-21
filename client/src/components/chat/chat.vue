@@ -3,8 +3,8 @@
     <div class="content">
       <div class="list">
         <div class="portrait">
-          <img :src="userInfo.avatar" alt="">
-          <span>{{userInfo.nickname}}</span>
+          <img :src="user.avatar" alt="">
+          <span>{{user.nickname}}</span>
           <div class="Notice" @click="systemNoticeDig = true; clearSystemNotice()">
             <el-badge is-dot class="badge" :hidden="!systemNotice.length"><i class="iconfont icon-xiaoxi"></i></el-badge>
           </div>
@@ -12,7 +12,7 @@
         <el-tabs v-model="menuNmae" @tab-click="handleClick">
           <el-tab-pane label="用户管理" name="first">
             <ul class="user">
-              <li v-for="item in userList.friends" @click="setNowChater(item)" v-if="item.type == 'normal'">
+              <li v-for="item in userList.friends" @click="setNowChater(item)">
                 <img :src="item.avatar" alt="" :class="{'offline': item.status == 'offline'}">
                 <span>{{item.nickname}}</span>
               </li>
@@ -35,7 +35,7 @@
         <h3>{{nowChater.nickname}}{{nowChater.username=='all' ? `(${userList.allPeople.length})` : ''}}</h3>
         <section>
           <ul>
-            <li v-for="(item, $index) in chatRecord[nowChater.username]" class="clear" :class="{right: item.messenger == userInfo.username}">
+            <li v-for="(item, $index) in chatRecord[nowChater.username]" class="clear" :class="{right: item.messenger == user.username}">
               <p class="time" v-if="isShowTime($index)">{{new Date(item.time).toLocaleTimeString()}}</p>
               <img :src="item.messengerAvatar" alt="">
               <div v-html="item.msg">
@@ -103,8 +103,11 @@ export default {
       vm.$router.push({name: 'Login'});
     })
     this.getSystemNotice();
-    this.socket.emit('join', vm.userInfo.username);
+    setTimeout(function () {
+      vm.socket.emit('join', vm.user.username);
+    }, 1000)
     this.socket.on('getFriends', data => {
+      console.log(data)
       vm.getUserList(data);
     })
     this.socket.on('serverSend', data => {
@@ -146,8 +149,8 @@ export default {
       this.socket.emit('clientSend', {
         targetName: this.nowChater.username,
         msg: this.message,
-        messenger: this.userInfo.username,
-        messengerAvatar: this.userInfo.avatar
+        messenger: this.user.username,
+        messengerAvatar: this.user.avatar
       });
       this.message = '';
     },
@@ -159,8 +162,8 @@ export default {
   },
   computed: mapState({
     ...mapGetters([
-      'userInfo'
     ]),
+    user: state => state.chat.user || {},
     userList: state => state.chat.userList,
     nowChater: state => state.chat.nowChater,
     chatRecord: state => state.chat.chatRecord,

@@ -3,7 +3,8 @@ const router = express.Router();
 const Userdb = require('../models/user');
 const checkLogin = require('../middlewares/check').checkLogin;
 const Information = require('../models/information');
-const socket = require('../socket/')
+const socket = require('../socket/');
+const deleteArray = require('../common/utils').deleteArray;
 
 router.post('/addFriend', checkLogin, (req, res, next) => {
   const Initiator = req.body.Initiator;
@@ -15,14 +16,7 @@ router.post('/addFriend', checkLogin, (req, res, next) => {
     .exec((err, data) => {
       if (err) return next({message: '系统错误'});
       if (data.length < 2) return next({message: '用户不存在'});
-      data[0].friends.push({
-        username: data[1].username,
-        nickname: data[1].nickname,
-        avatar: data[1].avatar,
-        gender: data[1].gender,
-        status: data[1].status,
-        type: 'wait'
-      })
+      data[0].waitFriends.push(data[1].username);
       data[0].save();
       Information.create({
         username: targetUser,
@@ -41,40 +35,6 @@ router.post('/addFriend', checkLogin, (req, res, next) => {
         msg: '成功'
       })
     });
-    // let sort = Initiator > targetUser ? -1 : 1;
-    // Userdb.find({username: {$in: [Initiator, targetUser]}}).sort({username: sort})
-    // .populate({path: 'information', model: 'Information'})
-    // .exec((err, data) => {
-    //   if (err) return next('系统错误')
-    //   if (data[0].friends.filter(ele => ele.username == targetUser).length > 0) return next({message: '以添加过'})
-    //   if (data.length < 2) return next({message: '用户不存在'})
-    //   data[0].friends.push({
-    //     username: data[1].username,
-    //     nickname: data[1].nickname,
-    //     avatar: data[1].avatar,
-    //     gender: data[1].gender,
-    //     status: 'wait'
-    //   })
-    //   data[0].save();
-    //   if (data[1].information) {
-    //     data[1].information.requestAddList.push({
-    //       username: data[0].username,
-    //       nickname: data[0].nickname,
-    //       avatar: data[0].avatar
-    //     });
-    //     data[1].information.save();
-    //   } else {
-    //     Information.create({
-    //       _id: data[1].id,
-    //       username: data[1].username,
-    //       requestAddList: [{
-    //         username: data[0].username,
-    //         nickname: data[0].nickname,
-    //         avatar: data[0].avatar
-    //       }]
-    //     })
-    //   }
-    // })
   } catch (e) {
     return res.send({
       isSuccess: 0,
@@ -106,7 +66,6 @@ router.post('/clearSystemNotice', checkLogin, (req, res, next) => {
   const username = req.body.username;
   Information.remove({username: username, type: 'system'})
   .then((data) => {
-    console.log(data)
     res.send({
       isSuccess: 1,
       msg: '删除成功'
@@ -128,16 +87,10 @@ router.post('/verification', checkLogin, (req, res, next) => {
     if (err) return next({message: '系统错误'});
     if (data.length < 2) return next({message: '用户不存在'});
     if (status) {
-      data[0].friends.push({
-        username: data[1].username,
-        nickname: data[1].nickname,
-        avatar: data[1].avatar,
-        gender: data[1].gender,
-        status: data[1].status,
-        type: 'normal'
-      })
+      data[0].friends.push(data[1].username);
       data[0].save();
-      data[1].friends.filter(ele => ele.username == data[0].username)[0].status = 'normal';
+      deleteArray(data[1].waitFriends, data[0].username);
+      data[1].friends.push(data[0].username);
       data[1].save();
       socket.systemNotice(data[1].username, `${data[0].nickname}同意添加你为好友`);   // 在线推送
       Information.create({                                      // 添加系统消息
@@ -148,9 +101,7 @@ router.post('/verification', checkLogin, (req, res, next) => {
         msg: `${data[0].nickname}同意添加你为好友`
       })
     } else {
-      let item = data[1].friends.filter(ele => ele.username == data[0].username)[0];
-      let idx = data[1].friends.indexOf(item);
-      data[1].friends.splice(idx, 1);
+      deleteArray(data[1].waitFriends, data[0].username);
       data[1].save();
       Information.create({                                      // 添加系统消息
         username: targetUser,
@@ -161,7 +112,7 @@ router.post('/verification', checkLogin, (req, res, next) => {
       })
       socket.systemNotice(data[1].username, `${data[0].nickname}拒绝添加你为好友`);   // 在线推送
     }
-    Information.remove({_id: msgId});     // 删除该信息
+    Information.remove({_id: msgId}, function () {});     // 删除该信息
     res.send({
       isSuccess: 1
     })
