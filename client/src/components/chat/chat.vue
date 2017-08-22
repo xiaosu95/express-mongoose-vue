@@ -9,22 +9,26 @@
             <el-badge is-dot class="badge" :hidden="!systemNotice.length"><i class="iconfont icon-xiaoxi"></i></el-badge>
           </div>
         </div>
-        <el-tabs v-model="menuNmae" @tab-click="handleClick">
-          <el-tab-pane label="用户管理" name="first">
+        <el-tabs v-model="menuNmae">
+          <el-tab-pane label="好友列表" name="first">
             <ul class="user">
+              <li @click="setNowChater({username: 'all',nickname: '所有人'})">
+                <img src="./img/all.jpg">
+                <span>所有人</span>
+              </li>
               <li v-for="item in userList.friends" @click="setNowChater(item)">
                 <img :src="item.avatar" alt="" :class="{'offline': item.status == 'offline'}">
                 <span>{{item.nickname}}</span>
               </li>
             </ul>
           </el-tab-pane>
-          <el-tab-pane label="配置管理" name="second">
+          <el-tab-pane label="未添加" name="second">
             <ul class="user">
               <li v-for="item in userList.allPeople" v-if="item.status == 'online'">
                 <img :src="item.avatar">
                 <span>{{item.nickname}}</span>
                 <el-tooltip class="item" effect="dark" content="添加好友" placement="top-start" v-if="!friendsList.includes(item.username)">
-                  <i class="el-icon-plus addFriendBut" @click="addFriend(item)" v-show="item.status != 'wait'"></i>
+                  <i class="el-icon-plus addFriendBut" @click="addFriend(item)"></i>
                 </el-tooltip>
               </li>
             </ul>
@@ -32,7 +36,7 @@
         </el-tabs>
       </div>
       <div class="chatPanel">
-        <h3>{{nowChater.nickname}}{{nowChater.username=='all' ? `(${userList.allPeople.length})` : ''}}</h3>
+        <h3>{{nowChater.nickname}}</h3>
         <section>
           <ul>
             <li v-for="(item, $index) in chatRecord[nowChater.username]" class="clear" :class="{right: item.messenger == user.username}">
@@ -54,7 +58,7 @@
       </div>
     </div>
 
-    <el-dialog title="系统消息" v-model="systemNoticeDig" size="tiny" class="systemNoticeDig">
+    <el-dialog title="系统消息" v-model="systemNoticeDig" size="tiny" class="systemNoticeDig" @close="clearSystemNotice">
       <ul>
         <li class="addfriend" v-for="item in systemNotice">
           <h6>
@@ -63,8 +67,8 @@
           </h6>
           <p>{{item.type == 'addFriend' ? `${item.initiator}想加你为好友` : item.msg}}</p>
           <div class="butBox" v-if="item.type == 'addFriend'">
-            <el-button type="danger" size="mini" @click="item.status = false; verification(item)">拒绝</el-button>
-            <el-button size="mini" @click="item.status = true; verification(item)">同意</el-button>
+            <el-button type="danger" size="mini" @click="item.status = false; verification(item); systemNoticeDig=false">拒绝</el-button>
+            <el-button size="mini" @click="item.status = true; verification(item); systemNoticeDig=false">同意</el-button>
           </div>
         </li>
       </ul>
@@ -107,7 +111,6 @@ export default {
       vm.socket.emit('join', vm.user.username);
     }, 1000)
     this.socket.on('getFriends', data => {
-      console.log(data)
       vm.getUserList(data);
     })
     this.socket.on('serverSend', data => {
@@ -121,10 +124,18 @@ export default {
       })
     })
     this.socket.on('systemNotice', data => {
-      vm.$notify.info({
-        title: '消息',
-        message: `${data.nickname}想加你为好友`
-      });
+      if (data.type === 'addFriend') {
+        vm.$notify.info({
+          title: '好友请求',
+          message: `${data.info.nickname}想加你为好友`
+        });
+        vm.getSystemNotice();
+      } else if (data.type === 'system') {
+        vm.$notify.info({
+          title: '系统消息',
+          message: data.info
+        });
+      }
     })
   },
   methods: {
@@ -137,15 +148,11 @@ export default {
       'clearSystemNotice',
       'verification'
     ]),
-    handleClick (tab) {
-      if (tab.name === 'second') {
-        this.setNowChater({
-          username: 'all',
-          nickname: '全部'
-        });
-      }
-    },
     send () {
+      if (this.message === '') {
+        this.$message.warning('不能发送空消息');
+        return;
+      }
       this.socket.emit('clientSend', {
         targetName: this.nowChater.username,
         msg: this.message,
@@ -296,7 +303,7 @@ export default {
               border-radius: 4px;
               font-size: 14px;
               color: #333;
-              white-space: pre-line;
+              white-space: pre-wrap;
               &:before {
                 content: "";
                 display: block;

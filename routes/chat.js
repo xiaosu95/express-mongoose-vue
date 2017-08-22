@@ -5,6 +5,7 @@ const checkLogin = require('../middlewares/check').checkLogin;
 const Information = require('../models/information');
 const socket = require('../socket/');
 const deleteArray = require('../common/utils').deleteArray;
+const getUserList = require('../socket/').getUserList;
 
 router.post('/addFriend', checkLogin, (req, res, next) => {
   const Initiator = req.body.Initiator;
@@ -26,9 +27,12 @@ router.post('/addFriend', checkLogin, (req, res, next) => {
         type: 'addFriend'
       })
       socket.systemNotice(data[1].username, {             // 若在线直接推送
-        username: data[0].username,
-        nickname: data[0].nickname,
-        avatar: data[0].avatar
+        info: {
+          username: data[0].username,
+          nickname: data[0].nickname,
+          avatar: data[0].avatar
+        },
+        type: 'addFriend'
       })
       return res.send({
         isSuccess: 1,
@@ -92,7 +96,7 @@ router.post('/verification', checkLogin, (req, res, next) => {
       deleteArray(data[1].waitFriends, data[0].username);
       data[1].friends.push(data[0].username);
       data[1].save();
-      socket.systemNotice(data[1].username, `${data[0].nickname}同意添加你为好友`);   // 在线推送
+      socket.systemNotice(data[1].username, {info: `${data[0].nickname}同意添加你为好友`, type: 'system'});   // 在线推送
       Information.create({                                      // 添加系统消息
         username: targetUser,
         initiator: '系统',
@@ -110,9 +114,10 @@ router.post('/verification', checkLogin, (req, res, next) => {
         type: 'system',
         msg: `${data[0].nickname}拒绝添加你为好友`
       })
-      socket.systemNotice(data[1].username, `${data[0].nickname}拒绝添加你为好友`);   // 在线推送
+      socket.systemNotice(data[1].username, {info: `${data[0].nickname}拒绝添加你为好友`, type: 'system'});   // 在线推送
     }
     Information.remove({_id: msgId}, function () {});     // 删除该信息
+    getUserList([username, targetUser]);                  // 推送最新列表
     res.send({
       isSuccess: 1
     })

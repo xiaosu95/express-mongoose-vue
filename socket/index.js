@@ -58,3 +58,12 @@ exports.systemNotice = function (user, text) {
     socketList[user].emit('systemNotice', text)
   }
 }
+
+// 指定用户刷新用户列表
+exports.getUserList = function (list) {
+  list.forEach(ele => {
+    Userdb.getFriends(socketList[ele].username).then(data => {
+      socketList[ele].emit('getFriends', data);         // 获取好友列表
+    })
+  })
+}

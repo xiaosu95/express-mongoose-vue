@@ -5,19 +5,20 @@ import store from '../'
 
 const state = {
   userList: Object,
-  nowChater: '',
+  nowChater: {username: 'all', nickname: '所有人'},
   systemNotice: [],   // 系统信息
   chatRecord: {},        // 聊天记录
   user: JSON.parse(sessionStorage.getItem('user'))
 }
 const getters = {
-  userInfo: () => {             // 用户基本信息
-    return JSON.parse(sessionStorage.getItem('user'));
-  }
+
 }
 const mutations = {
   getUserList (state, list) {               // 获取用户列表
     state.userList = list;
+  },
+  setUser (state, user) {                 // 获取用户信息
+    state.user = user;
   },
   setNowChater (state, params) {            // 设置当前聊天对象
     state.nowChater = params;

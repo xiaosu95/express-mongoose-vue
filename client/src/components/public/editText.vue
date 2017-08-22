@@ -58,6 +58,8 @@ export default {
   pre {
     outline: none;
     height: 100%;
+    white-space: pre-wrap;
+    overflow: auto;
   }
 }
 </style>
