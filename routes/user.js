@@ -48,9 +48,10 @@ router.post('/register', $upload('uploads/', ['png', 'jpg']).single('avatar'), (
   })
 })
 
+// 登录
 router.post('/login', (req, res) => {
   const params = req.body;
-  Userdb.findOne({username: params.username, password: sha1(params.password)}, 'username nickname gender avatar')
+  Userdb.findOne({username: params.username, password: sha1(params.password)}, 'username nickname gender avatar createTime')
   .then(data => {
     if (data) {
       req.session.user = data.username;

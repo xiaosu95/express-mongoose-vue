@@ -12,8 +12,7 @@ export default {
   name: 'app',
   data () {
     return {
-      routeName: '',
-      sockets: null
+
     }
   },
   components: {
