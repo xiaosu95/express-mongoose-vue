@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Chat from './modules/chat'
+import Blog from './modules/blog'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -14,6 +15,7 @@ export default new Vuex.Store({
 
   },
   modules: {
-    chat: Chat
+    chat: Chat,
+    blog: Blog
   }
 })

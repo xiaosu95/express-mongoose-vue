@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 informationSchema = mongoose.Schema({
   username: String,
   initiator: String,
-  createTime: Number,
+  createTime: String,
   type: String,
   msg: String,
   initiatorAvatar: String

@@ -4,7 +4,7 @@ body, dl, dd, h1, h2, h3, h4, h5, h6, p, form, pre, cite{
 pre {
   font-family: inherit;
 }
-i,em,strong,b,u{font-style:normal;font-weight:normal; text-decoration: none;}
+/*i,em,strong,b,u{font-style:normal;font-weight:normal; text-decoration: none;}*/
 ol, ul, li{
   margin:0;
   padding:0;

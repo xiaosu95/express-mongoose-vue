@@ -27,7 +27,7 @@ new Vue({
 })
 
 Vue.filter('timeFilter', function (val) {
-  let date = new Date(val);
+  let date = new Date(Number(val));
   let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
   let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
   let hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
@@ -37,7 +37,7 @@ Vue.filter('timeFilter', function (val) {
   return time;
 })
 Vue.filter('timeFilter2', function (val) {
-  let date = new Date(val);
+  let date = new Date(Number(val));
   let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
   let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
   let time = `${date.getFullYear()}-${month}-${day}`;

@@ -3,6 +3,8 @@ import Vue from 'vue'
 const Login = resolve => require(['@/components/login/login.vue'], resolve);
 const Chat = resolve => require(['@/components/chat/chat.vue'], resolve);
 const Blog = resolve => require(['@/components/blog/blog.vue'], resolve);
+const BlogList = resolve => require(['@/components/blog/blogList.vue'], resolve);
+const BlogContent = resolve => require(['@/components/blog/blogContent.vue'], resolve);
 
 Vue.use(Router);
 export default new Router({
@@ -20,7 +22,19 @@ export default new Router({
     {
       path: '/blog',
       name: 'Blog',
-      component: Blog
+      component: Blog,
+      children: [
+        {
+          path: 'blogList',
+          name: 'BlogList',
+          component: BlogList
+        },
+        {
+          path: 'blogContent',
+          name: 'BlogContent',
+          component: BlogContent
+        }
+      ]
     }
   ]
 })

@@ -26,6 +26,7 @@ const app = express();
 // app.use(express.static(path.join(__dirname, 'client/src')))
 // app.use(express.static(path.join(__dirname, 'client/dist')))
 app.use(express.static(path.join(__dirname, 'uploads')))
+app.use(express.static(path.join(__dirname, 'blogPhoto')))
 // 解析postbody参数
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

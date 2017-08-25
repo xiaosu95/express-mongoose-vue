@@ -10,7 +10,7 @@ let userSchema = new Schema({
   friends: Array,
   waitFriends: Array,
   status: String,
-  createTime: Number,
+  createTime: String,
   id: Schema.Types.ObjectId,
   information: Schema.Types.ObjectId
 })

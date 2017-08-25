@@ -21,5 +21,8 @@ export default {
       ia[i] = byteString.charCodeAt(i);
     }
     return new Blob([ia], {type: mimeString});
+  },
+  removal: (arr) => {                   // 去重
+    return Array.from(new Set(arr));
   }
 }
