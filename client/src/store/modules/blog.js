@@ -38,7 +38,6 @@ const mutations = {
     }).then(data => {
       if (data.data.isSuccess) {
         state.blogArticleList = data.data.data;
-        console.log(state.blogArticleList)
       }
     })
   }

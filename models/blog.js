@@ -7,7 +7,8 @@ let blogSchema = new Schema({
   username: String,
   type: String,
   createTime: String,
-  updateTime: String
+  updateTime: String,
+  author: String
 })
 
 module.exports = mongoose.model('Blog', blogSchema, 'blog');

@@ -63,7 +63,7 @@ router.post('/upload', checkLogin, $upload('blogPhoto/', ['png', 'jpg']).single(
 })
 
 // 添加新的文章
-router.post('/createBlog', (req, res, next) => {
+router.post('/createBlog', checkLogin, (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   const username = req.body.username;

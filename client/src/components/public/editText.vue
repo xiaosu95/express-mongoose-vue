@@ -1,7 +1,7 @@
 <template>
   <div class="editText">
     <pre contenteditable=true @keydown="changeValue" @keydown.enter="enter" @keydown.enter.ctrl="ctrlEnter"></pre>
-    <input type="text" v-model="currentValue" v-show=false>
+    <input type="text" v-model="currentValue" v-show="false">
   </div>
 </template>
 

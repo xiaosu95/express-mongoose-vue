@@ -10,13 +10,29 @@
     <div class="blogList">
       <h3>分类</h3>
       <ul>
+        <li @click="chooseMenu(null)">全部</li>
         <li v-for="item in blogType" @click="chooseMenu(item)">{{item}}({{blogList[item].length}})</li>
       </ul>
     </div>
   </div>
-  <router-view class="main_r"></router-view>
+  <transition name="fade">
+    <router-view class="main_r"></router-view>
+  </transition>
 <!-- 编辑 -->
   <el-dialog title="编辑" v-model="createBlogDig" size="full" class="createBlogDig">
+    <el-form :inline="true" :model="newBlogForm" class="demo-form-inline" :rules="newBlogRules" ref="newBlogForm">
+      <el-form-item label="标题" prop="title">
+        <el-input v-model="newBlogForm.title" placeholder="标题" style="width:400px"></el-input>
+      </el-form-item>
+      <el-form-item label="类型" prop="type">
+        <el-autocomplete
+          class="inline-input"
+          v-model="newBlogForm.type"
+          :fetch-suggestions="querySearch"
+          placeholder="类型"
+        ></el-autocomplete>
+      </el-form-item>
+    </el-form>
     <div id="editorElem"></div>
     <span slot="footer" class="dialog-footer">
       <el-button @click="createBlogDig = false">取 消</el-button>
@@ -34,7 +50,19 @@ export default {
   data () {
     return {
       createBlogDig: false,
-      editor: null
+      editor: null,
+      newBlogForm: {
+        title: '',
+        type: ''
+      },
+      newBlogRules: {
+        title: [
+          {required: true, message: '请输入标题', trigger: 'blur'}
+        ],
+        type: [
+          {required: true, message: '请输入文章类型', trigger: 'blur'}
+        ]
+      }
     }
   },
   created () {
@@ -59,19 +87,37 @@ export default {
     },
     saveNewBlog () {                     // 保存文章
       const vm = this;
-      const json = {
-        username: vm.user.username,
-        title: 'test',
-        type: 'html',
-        content: vm.editor.txt.html()
-      }
-      vm.$axios.post(API.CREATE_BLOG, json)
-      .then(data => {
-        console.log(data)
+      this.$refs.newBlogForm.validate((valid) => {
+        if (valid) {
+          const json = {
+            username: vm.user.username,
+            title: vm.newBlogForm.title,
+            type: vm.newBlogForm.type,
+            content: vm.editor.txt.html()
+          }
+          vm.$axios.post(API.CREATE_BLOG, json)
+          .then(data => {
+            if (data.data.isSuccess) {
+              vm.$message.success('创建成功');
+              vm.$refs.newBlogForm.resetFields();
+              vm.getBlogList();
+              vm.createBlogDig = false;
+            } else {
+              vm.$message.error('创建失败');
+            }
+          })
+        }
       })
     },
     chooseMenu (type) {
+      this.$router.push({name: 'BlogList'});
       this.$emit('chooseMenu', type);
+    },
+    querySearch (queryString, cb) {           // 类型
+      let arr = this.blogType.map(ele => {
+        return {value: ele}
+      });
+      cb(arr)
     }
   },
   computed: mapState({
@@ -130,6 +176,8 @@ export default {
   .main_r {
     width: calc(100% - 220px);
     min-height: calc(100% - 30px);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
+    box-sizing: border-box;
     float: right;
   }
   .createBlogDig {
@@ -137,7 +185,7 @@ export default {
       height: calc(100% - 200px);
     }
     #editorElem {
-      height: 100%;
+      height: calc(100% - 60px);
       .w-e-text-container {
         height: 100% !important;
       }
@@ -147,6 +195,16 @@ export default {
         }
       }
     }
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .8s
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+    transition: opacity .8s;
+    opacity: 0
+  }
+  .fade-enter-to {
+    transform: translateY(-100%);
   }
 }
 </style>

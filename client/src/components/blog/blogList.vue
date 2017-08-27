@@ -45,9 +45,7 @@ export default {
 <style media="screen" lang="scss">
 #blogList {
   background: #fff;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
   padding: 10px;
-  box-sizing: border-box;
   h3 {
     text-align: center;
     line-height: 30px;

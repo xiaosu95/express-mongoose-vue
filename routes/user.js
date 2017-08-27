@@ -32,8 +32,8 @@ router.post('/register', $upload('uploads/', ['png', 'jpg']).single('avatar'), (
   user.password = sha1(password);
   Userdb.addUser(user)             // 操作数据库
   .then(data => {
-    req.session.user = data.username;
     delete user.password;
+    req.session.user = user;
     res.send({
       isSuccess: 1,
       msg: '注册成功',
@@ -54,7 +54,7 @@ router.post('/login', (req, res) => {
   Userdb.findOne({username: params.username, password: sha1(params.password)}, 'username nickname gender avatar createTime')
   .then(data => {
     if (data) {
-      req.session.user = data.username;
+      req.session.user = data;
       res.send({
         isSuccess: 1,
         msg: '登录成功',
