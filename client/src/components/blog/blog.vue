@@ -53,7 +53,6 @@ export default {
   },
   created () {
     this.getBlogList();
-    console.log(12312)
   },
   methods: {
     ...mapMutations([
