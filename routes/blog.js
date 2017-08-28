@@ -94,6 +94,25 @@ router.post('/createBlog', checkLogin, (req, res, next) => {
   })
 })
 
+// 编辑文章
+router.post('/updateEdit', checkLogin, (req, res, next) => {
+  const title = req.body.title;
+  const content = req.body.content;
+  const username = req.session.user.username;
+  const type = req.body.type;
+  const _id = req.body._id;
+  Blog.update({username: username, _id: _id}, {title, content, type, updateTime: new Date().getTime()})
+  .exec((err, data) => {
+    if (err) next({message: '编辑失败'});
+    else {
+      res.send({
+        isSuccess: 1,
+        msg: '修改成功'
+      })
+    }
+  })
+})
+
 // 删除文章
 router.get('/deleteBlog', checkLogin, (req, res, next) => {
   const _id = req.query.blogId;

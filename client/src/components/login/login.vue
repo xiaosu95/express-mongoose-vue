@@ -34,7 +34,7 @@
           <div class="cont_form_sign_up"> <a href="javascript:;" @click="ocultar_login_sign_up"><i class="el-icon-close
 "></i></a>
             <h2>SIGN UP</h2>
-            <input type="text" placeholder="账号" v-model="sign.username">
+            <input type="number" placeholder="账号" v-model="sign.username">
             <input type="text" placeholder="昵称" v-model="sign.nickname">
             <input type="password" placeholder="密码" v-model="sign.password">
             <input type="password" placeholder="再次输入密码" v-model="sign.repassword">

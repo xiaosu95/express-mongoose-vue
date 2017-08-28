@@ -19,26 +19,7 @@
     <router-view class="main_r"></router-view>
   </transition>
 <!-- 编辑 -->
-  <el-dialog title="编辑" v-model="createBlogDig" size="full" class="createBlogDig">
-    <el-form :inline="true" :model="newBlogForm" class="demo-form-inline" :rules="newBlogRules" ref="newBlogForm">
-      <el-form-item label="标题" prop="title">
-        <el-input v-model="newBlogForm.title" placeholder="标题" style="width:400px"></el-input>
-      </el-form-item>
-      <el-form-item label="类型" prop="type">
-        <el-autocomplete
-          class="inline-input"
-          v-model="newBlogForm.type"
-          :fetch-suggestions="querySearch"
-          placeholder="类型"
-        ></el-autocomplete>
-      </el-form-item>
-    </el-form>
-    <div id="editorElem"></div>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="createBlogDig = false">取 消</el-button>
-      <el-button type="primary" @click="saveNewBlog">确 定</el-button>
-    </span>
-  </el-dialog>
+  <v-editBlog :editor="editor" :blogForm="newBlogForm" @saveBlog="saveNewBlog" :_id="editorId" ref="edit"></v-editBlog>
 </div>
 </template>
 
@@ -46,11 +27,16 @@
 import E from 'wangeditor'
 import { mapState, mapMutations } from 'vuex'
 import API from '@/common/api'
+import EditBlog from '@/components/public/editBlog'
 export default {
+  components: {
+    'v-editBlog': EditBlog
+  },
   data () {
     return {
       createBlogDig: false,
       editor: null,
+      editorId: 'creatEdit',
       newBlogForm: {
         title: '',
         type: ''
@@ -74,10 +60,10 @@ export default {
     ]),
     openEditorElem () {                 // 打开编辑窗口
       const vm = this;
-      this.createBlogDig = true;
+      this.$refs.edit.editBlogDig = true;
       if (!this.editor) {
         setTimeout(function () {
-          vm.editor = new E('#editorElem');
+          vm.editor = new E(`#${vm.editorId}`);
           vm.editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
           vm.editor.customConfig.uploadFileName = 'blogPhoto';
           vm.editor.customConfig.uploadImgServer = '/blog/upload'  // 上传图片到服务器
@@ -87,37 +73,27 @@ export default {
     },
     saveNewBlog () {                     // 保存文章
       const vm = this;
-      this.$refs.newBlogForm.validate((valid) => {
-        if (valid) {
-          const json = {
-            username: vm.user.username,
-            title: vm.newBlogForm.title,
-            type: vm.newBlogForm.type,
-            content: vm.editor.txt.html()
-          }
-          vm.$axios.post(API.CREATE_BLOG, json)
-          .then(data => {
-            if (data.data.isSuccess) {
-              vm.$message.success('创建成功');
-              vm.$refs.newBlogForm.resetFields();
-              vm.getBlogList();
-              vm.createBlogDig = false;
-            } else {
-              vm.$message.error('创建失败');
-            }
-          })
+      const json = {
+        username: vm.user.username,
+        title: vm.newBlogForm.title,
+        type: vm.newBlogForm.type,
+        content: vm.editor.txt.html()
+      }
+      vm.$axios.post(API.CREATE_BLOG, json)
+      .then(data => {
+        if (data.data.isSuccess) {
+          vm.$message.success('创建成功');
+          vm.getBlogList();
+          vm.editor.txt.html('');       // 清空内容
+          this.$refs.edit.editBlogDig = false;
+        } else {
+          vm.$message.error('创建失败');
         }
       })
     },
     chooseMenu (type) {
       this.$router.push({name: 'BlogList'});
       this.$emit('chooseMenu', type);
-    },
-    querySearch (queryString, cb) {           // 类型
-      let arr = this.blogType.map(ele => {
-        return {value: ele}
-      });
-      cb(arr)
     }
   },
   computed: mapState({
@@ -133,6 +109,7 @@ export default {
   padding: 30px 30px 0;
   background: #eee;
   box-sizing: border-box;
+  overflow: auto;
   .main_l {
     width: 200px;
     float: left;
@@ -179,22 +156,6 @@ export default {
     box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
     box-sizing: border-box;
     float: right;
-  }
-  .createBlogDig {
-    .el-dialog__body {
-      height: calc(100% - 200px);
-    }
-    #editorElem {
-      height: calc(100% - 60px);
-      .w-e-text-container {
-        height: 100% !important;
-      }
-      .w-e-text-container {
-        li {
-          list-style: initial;
-        }
-      }
-    }
   }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .8s
