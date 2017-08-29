@@ -30,6 +30,9 @@ export default {
       vm.params.type = type;
       vm.getBlogArticleList(vm.params)
     })
+    this.$parent.$on('refreshList', () => {
+      vm.getBlogArticleList(vm.params)
+    })
   },
   methods: {
     ...mapMutations([

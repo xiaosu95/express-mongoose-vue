@@ -84,6 +84,7 @@ export default {
         if (data.data.isSuccess) {
           vm.$message.success('创建成功');
           vm.getBlogList();
+          vm.$emit('refreshList');
           vm.editor.txt.html('');       // 清空内容
           this.$refs.edit.editBlogDig = false;
         } else {
