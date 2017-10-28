@@ -2,6 +2,7 @@ import API from '@/common/api'
 import Axios from 'axios'
 import { Message } from 'element-ui';
 import store from '../'
+import Vue from 'vue'
 
 const state = {
   userList: Object,
@@ -24,7 +25,7 @@ const mutations = {
     state.nowChater = params;
   },
   addChatRecord (state, params) {           // 添加聊天记录
-    if (!state.chatRecord[params.messager]) state.chatRecord[params.messager] = new Array(0);
+    if (!state.chatRecord[params.messager]) Vue.set(state.chatRecord, params.messager, []);
     state.chatRecord[params.messager].push(params.data);
   },
   addFriend (state, targetUser) {           // 添加好友

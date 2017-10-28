@@ -77,7 +77,6 @@
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span> -->
     </el-dialog>
-    <span v-show="false">{{flag}}</span>
   </div>
 </template>
 
@@ -95,8 +94,7 @@ export default {
       menuNmae: 'first',
       message: '',
       systemNoticeDig: false,              // 系统消息
-      showTimeInterval: 5 * 1000 * 60,     // 显示时间线的间隔
-      flag: true        // 协助刷新dom
+      showTimeInterval: 5 * 1000 * 60     // 显示时间线的间隔
     }
   },
   mounted () {
@@ -118,7 +116,6 @@ export default {
         messager: data.messager,
         data: data.data
       });
-      vm.flag = !vm.flag;
       vm.$nextTick(function () {
         vm.$el.querySelector('.chatPanel ul').scrollTop = vm.$el.querySelector('.chatPanel ul').scrollHeight;
       })

@@ -1,5 +1,5 @@
 const Userdb = require('../models/user');
-let socketList = {};
+let socketList = {};      // 用户列表
 exports.socket = function (socketIO) {
   socketIO.on('connection', socket => {         // 客户端与服务端连接
     const url = socket.request.headers.referer;

@@ -21,19 +21,10 @@ a {
   text-decoration: none;
   color: #fff;
 }
-.tabsBox .el-tabs__content {
-  flex: 1 ;
-  -ms-flex: 1 ;
+.w-e-text pre code {
+  white-space: pre-wrap;
 }
-.el-select {
-  vertical-align: middle;
-}
-tbody tr {
-  cursor: pointer;
-}
-.cell {
-  white-space: nowrap !important;
-}
+
 .clear::after {
   content: "";
   height: 0;

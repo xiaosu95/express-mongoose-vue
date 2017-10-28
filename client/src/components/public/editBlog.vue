@@ -47,7 +47,7 @@ export default {
     },
     querySearch (queryString, cb) {           // 类型
       let arr = this.$store.state.blog.blogType.map(ele => {
-        return {value: ele}
+        return {value: ele.type}
       });
       cb(arr)
     }

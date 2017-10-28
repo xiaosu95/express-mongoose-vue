@@ -45,3 +45,7 @@ exports.deleteArray = function (arr, item) {
 	let idx = arr.indexOf(item);
 	idx != -1 && arr.splice(idx, 1);
 }
+
+exports.removal = (arr) => {                   // 去重
+	return Array.from(new Set(arr));
+}

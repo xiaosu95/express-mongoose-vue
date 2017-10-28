@@ -1,12 +1,24 @@
 <template>
 <div id="blogList">
   <h3>当前标签:{{params.type || '全部'}}</h3>
-  <ul>
-    <li v-for="(item, $index) in blogArticleList" @click="$router.push({name: 'BlogContent', query: {idx: $index}})">
-      {{item.title}}
-      <span>{{item.author}} {{item.createTime | timeFilter}}</span>
-    </li>
-  </ul>
+  <div class="list">
+    <ul>
+      <li v-for="(item, $index) in blogList" @click="$router.push({name: 'BlogContent', query: {_id: item._id}})">
+        {{item.title}}
+        <span>{{item.author}} {{item.createTime | timeFilter}}</span>
+      </li>
+    </ul>
+  </div>
+  <footer>
+    <el-pagination
+    @size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
+    :current-page="params.pageNum"
+    :page-size="params.pageSize"
+    layout="total, prev, pager, next, jumper"
+    :total="params.totalNum">
+  </el-pagination>
+  </footer>
 </div>
 </template>
 
@@ -16,7 +28,7 @@ export default {
   data () {
     return {
       params: {
-        pageSize: 10,
+        pageSize: 20,
         pageNum: 1,
         type: null,
         totalNum: 0
@@ -25,22 +37,30 @@ export default {
   },
   created () {
     let vm = this;
-    this.getBlogArticleList(this.params);
+    this.getBlogList(this.params);
     this.$parent.$on('chooseMenu', type => {
       vm.params.type = type;
-      vm.getBlogArticleList(vm.params)
+      vm.getBlogList(vm.params)
     })
     this.$parent.$on('refreshList', () => {
-      vm.getBlogArticleList(vm.params)
+      vm.getBlogList(vm.params)
     })
   },
   methods: {
     ...mapMutations([
-      'getBlogArticleList'
-    ])
+      'getBlogList'
+    ]),
+    handleCurrentChange (pageNum) {
+      this.params.pageNum = pageNum;
+      this.getBlogList(this.params);
+    },
+    handleSizeChange (pageSize) {
+      this.params.pageSize = pageSize;
+      this.getBlogList(this.params);
+    }
   },
   computed: mapState({
-    blogArticleList: state => state.blog.blogArticleList
+    blogList: state => state.blog.blogList
   })
 }
 </script>
@@ -49,6 +69,7 @@ export default {
 #blogList {
   background: #fff;
   padding: 10px;
+  height: calc(100% - 30px);
   h3 {
     text-align: center;
     line-height: 30px;
@@ -56,21 +77,29 @@ export default {
     padding-bottom: 10px;
     border-bottom: 1px #efefef solid;
   }
-  li {
-    line-height: 50px;
-    padding-left: 10px;
-    font-size: 20px;
-    color: #505050;
-    border-bottom: 1px #efefef dashed;
-    cursor: pointer;
-    span {
-      float: right;
-      margin-right: 30px;
-      font-size: 12px;
+  .list {
+    height: calc(100% - 75px);
+    overflow: auto;
+    li {
+      line-height: 50px;
+      padding-left: 10px;
+      font-size: 20px;
+      color: #505050;
+      border-bottom: 1px #efefef dashed;
+      cursor: pointer;
+      span {
+        float: right;
+        margin-right: 30px;
+        font-size: 12px;
+      }
+      &:hover {
+        background: #fafafa;
+      }
     }
-    &:hover {
-      background: #fafafa;
-    }
+  }
+  footer {
+    padding-top: 6px;
+    text-align: center;
   }
 }
 </style>

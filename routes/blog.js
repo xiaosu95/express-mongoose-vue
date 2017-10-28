@@ -6,9 +6,10 @@ const checkLogin = require('../middlewares/check').checkLogin;
 const $upload = require('../common/utils').$upload;
 const path = require('path');
 const fs = require('fs');
+const removal = require('../common/utils').removal;       // 去重
 
-// 获取文章
-router.get('/getBlog', checkLogin, (req, res, next) => {
+// 获取分类文章列表
+router.get('/getBlogList', (req, res, next) => {
   const username = req.query.username;
   const pageSize = Number(req.query.pageSize);
   const pageNum = Number(req.query.pageNum);
@@ -22,31 +23,58 @@ router.get('/getBlog', checkLogin, (req, res, next) => {
   }
   let filterQuery = {username};
   if (type) filterQuery.type = type;
-  let blog = Blog.find(filterQuery);
-  const totalNum = blog.length;
+  let blog = Blog.find(filterQuery, 'title createTime');
   blog.skip(pageSize * (pageNum - 1))
   blog.limit(pageSize)
   blog.exec((err, data) => {
     if (err) return next({message: '系统错误'});
-    res.send({
-      isSuccess: 1,
-      totalNum,
-      pageSize,
-      pageNum,
-      data: data,
-      msg: '获取成功'
+    Blog.find(filterQuery).then(totalData => {      // 获取总数
+      const totalNum = totalData.length;
+      res.send({
+        isSuccess: 1,
+        totalNum,
+        pageSize,
+        pageNum,
+        data: data,
+        msg: '获取成功'
+      })
     })
   })
 })
-// 获取文章列表
-router.get('/getBlogList', checkLogin, (req, res, next) => {
-  const username = req.query.username;
-  if (!username) next({message: '用户名不能为空'});
-  Blog.find({username: username}, 'title createTime type')
+
+// 获取文章内容
+router.get('/getBlog_content', (req, res, next) => {
+  const _id = req.query._id;
+  if (!_id) next({message: 'ID不能为空'});
+  Blog.findOne({_id})
   .then(data => {
     res.send({
       isSuccess: 1,
       data: data,
+      msg: '获取成功'
+    })
+  }, () => {
+    next({message: '系统错误'});
+  })
+})
+
+// 获取文章分类列表
+router.get('/getBlog_classification', (req, res, next) => {
+  const username = req.query.username;
+  if (!username) next({message: '用户名不能为空'});
+  Blog.find({username: username}, 'type')
+  .then(data => {
+    const typeList = removal(data.map(ele => ele.type));
+    let blogList = new Array();
+    typeList.forEach(ele => {
+      blogList.push({
+        type: ele,
+        total: data.filter(ele2 => ele2.type == ele).length
+      })
+    })
+    res.send({
+      isSuccess: 1,
+      data: blogList,
       msg: '获取成功'
     })
   }, () => {

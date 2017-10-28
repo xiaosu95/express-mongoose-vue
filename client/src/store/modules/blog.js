@@ -2,33 +2,33 @@ import API from '@/common/api'
 import Axios from 'axios'
 // import { Message } from 'element-ui';
 import store from '../'
-import utils from '@/common/utils'
+// import utils from '@/common/utils'
 
 const state = {
-  blogList: {},
-  blogType: [],
-  blogArticleList: []
+  blogType: [],         // 文章类型列表
+  blogList: []          // 文章具体类型列表
 }
 const getters = {
 
 }
 const mutations = {
-  getBlogList (state) {                // 获取文章列表
-    Axios.get(API.GET_BLOG_LIST, {
+  getBlogClassification (state) {                // 获取文章列表
+    Axios.get(API.GET_BLOG_CLASSIFICATION, {
       params: {
         username: store.state.chat.user.username
       }
     }).then(data => {
       if (data.data.isSuccess) {
-        state.blogType = utils.removal(data.data.data.map(ele => ele.type));
-        state.blogType.forEach(ele => {
-          state.blogList[ele] = data.data.data.filter(ele2 => ele2.type === ele);
-        })
+        // state.blogType = utils.removal(data.data.data.map(ele => ele.type));
+        // state.blogType.forEach(ele => {
+        //   state.blogList[ele] = data.data.data.filter(ele2 => ele2.type === ele);
+        // })
+        state.blogType = data.data.data;
       }
     })
   },
-  getBlogArticleList (state, params) {         // 更具类型获取文章
-    Axios.get(API.GET_BLOG, {
+  getBlogList (state, params) {         // 更具类型获取文章
+    Axios.get(API.GET_BLOG_LIST, {
       params: {
         username: store.state.chat.user.username,
         type: params.type,
@@ -37,7 +37,8 @@ const mutations = {
       }
     }).then(data => {
       if (data.data.isSuccess) {
-        state.blogArticleList = data.data.data;
+        state.blogList = data.data.data;
+        params.totalNum = data.data.totalNum;
       }
     })
   }

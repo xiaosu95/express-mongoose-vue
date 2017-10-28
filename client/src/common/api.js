@@ -7,6 +7,7 @@ export default {
   VERIFICATION: '/chat/verification',                    // 验证好友信息
   CREATE_BLOG: '/blog/createBlog',                         // 创建博文
   UPDATE_BLOG: '/blog/updateEdit',                        // 更新文章
-  GET_BLOG_LIST: '/blog/getBlogList',                         // 获取博文列表
-  GET_BLOG: '/blog/getBlog'                              // 获取文章
+  GET_BLOG_CLASSIFICATION: '/blog/getBlog_classification',                         // 获取博文列表
+  GET_BLOG_LIST: '/blog/getBlogList',                              // 获取文章列表
+  GET_BLOG_CONTENT: '/blog/getBlog_content'                     // 获取文章内容
 }

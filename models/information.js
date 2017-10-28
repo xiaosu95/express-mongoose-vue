@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+// 系统消息
 informationSchema = mongoose.Schema({
   username: String,
   initiator: String,

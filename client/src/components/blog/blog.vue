@@ -6,18 +6,19 @@
       <p>{{user.nickname}}</p>
       <span>创建时间:{{user.createTime | timeFilter2}}</span>
     </div>
+    <embed src="http://www.blogclock.cn/swf/S100204334d80e0-9.swf" Width="180px" Height="230px" type="application/x-shockwave-flash" quality="high" wmode="transparent" autostart=true></embed>
     <el-button @click="openEditorElem" style="margin-top:20px; width:100%;" icon="edit">写文章...</el-button>
     <div class="blogList">
       <h3>分类</h3>
       <ul>
         <li @click="chooseMenu(null)">全部</li>
-        <li v-for="item in blogType" @click="chooseMenu(item)">{{item}}({{blogList[item].length}})</li>
+        <li v-for="item in blogType" @click="chooseMenu(item.type)">{{item.type}}({{item.total}})</li>
       </ul>
     </div>
   </div>
   <transition name="fade">
-    <router-view class="main_r"></router-view>
   </transition>
+  <router-view class="main_r"></router-view>
 <!-- 编辑 -->
   <v-editBlog :editor="editor" :blogForm="newBlogForm" @saveBlog="saveNewBlog" :_id="editorId" ref="edit"></v-editBlog>
 </div>
@@ -52,11 +53,14 @@ export default {
     }
   },
   created () {
-    this.getBlogList();
+    this.getBlogClassification();
+  },
+  mounted () {
+
   },
   methods: {
     ...mapMutations([
-      'getBlogList'
+      'getBlogClassification'
     ]),
     openEditorElem () {                 // 打开编辑窗口
       const vm = this;
@@ -111,6 +115,7 @@ export default {
   background: #eee;
   box-sizing: border-box;
   overflow: auto;
+  position: relative;
   .main_l {
     width: 200px;
     float: left;
@@ -157,12 +162,13 @@ export default {
     box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
     box-sizing: border-box;
     float: right;
+    transition: opacity .5s, width .5s;
   }
   .fade-enter-active, .fade-leave-active {
-    transition: opacity .8s
+    height: calc(100% - 30px);
+    overflow: hidden;
   }
   .fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
-    transition: opacity .8s;
     opacity: 0
   }
   .fade-enter-to {
