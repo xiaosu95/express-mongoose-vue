@@ -3,12 +3,12 @@
   <div class="close">
     <h3>{{blogContent.title}}</h3>
     <div class="set">
-      <span class="el-icon-edit edit" @click="openEdit">编辑</span>
-      <span class="el-icon-close" @click="$router.push({name: 'BlogList'})"></span>
+      <span class="el-icon-arrow-left" @click="$router.push({name: 'BlogList'})"></span>
     </div>
   </div>
   <div class="w-e-text" v-html="blogContent.content"></div>
   <v-editBlog :editor="editor" :blogForm="blogContent" @saveBlog="saveBlog" :_id="editorId" ref="edit"></v-editBlog>
+  <span class="el-icon-edit editbut" @click="openEdit"></span>
 </div>
 </template>
 ``
@@ -81,17 +81,20 @@ export default {
 <style media="screen" lang="scss">
 #blogContent {
   background: #fff;
+  position: relative;
   .close {
     position: relative;
     h3 {
       color: #505050;
       text-align: center;
       line-height: 40px;
+      border-bottom: 1px #efefef solid;
     }
     .set {
       position: absolute;
       line-height: 24px;
-      right: 20px;
+      font-size: 20px;
+      left: 0px;
       top: 10px;
       color: #505050;
     }
@@ -102,6 +105,21 @@ export default {
       &:hover {
         opacity: 1;
       }
+    }
+  }
+  .editbut {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    font-size: 20px;
+    background: rgba(0,0,0,.5);
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    opacity: .3;
+    border-radius: 3px;
+    &:hover {
+      opacity: 1;
     }
   }
   .w-e-text {

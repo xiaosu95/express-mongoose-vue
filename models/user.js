@@ -10,7 +10,7 @@ let userSchema = new Schema({
   friends: Array,
   waitFriends: Array,
   status: String,
-  createTime: String,
+  createTime: Number,
   id: Schema.Types.ObjectId,
   information: Schema.Types.ObjectId
 })
@@ -23,7 +23,7 @@ userSchema.statics.addUser = function (user) {
       if (data) {
         reject(`${user.username}以存在`);
       } else {
-        user.createTime = new Date();
+        user.createTime = Date.now();
         self.create(user)
         .then(() => {
           resolve(user);

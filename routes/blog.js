@@ -23,7 +23,7 @@ router.get('/getBlogList', (req, res, next) => {
   }
   let filterQuery = {username};
   if (type) filterQuery.type = type;
-  let blog = Blog.find(filterQuery, 'title createTime');
+  let blog = Blog.find(filterQuery, 'title createTime type');
   blog.skip(pageSize * (pageNum - 1))
   blog.limit(pageSize)
   blog.exec((err, data) => {
@@ -111,7 +111,7 @@ router.post('/createBlog', checkLogin, (req, res, next) => {
     username,
     type,
     author,
-    createTime: new Date().getTime()
+    createTime: Date.now()
   }).then(() => {
     res.send({
       isSuccess: 1,
@@ -142,8 +142,8 @@ router.post('/updateEdit', checkLogin, (req, res, next) => {
 })
 
 // 删除文章
-router.get('/deleteBlog', checkLogin, (req, res, next) => {
-  const _id = req.query.blogId;
+router.post('/deleteBlog', checkLogin, (req, res, next) => {
+  const _id = req.body._id;
   const username = req.session.user.username;
   Blog.remove({username, _id})
   .then(() => {

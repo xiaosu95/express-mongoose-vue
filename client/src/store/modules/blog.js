@@ -6,12 +6,16 @@ import store from '../'
 
 const state = {
   blogType: [],         // 文章类型列表
-  blogList: []          // 文章具体类型列表
+  blogList: [],          // 文章具体类型列表
+  user: null            // 用户
 }
 const getters = {
 
 }
 const mutations = {
+  userInit () {
+
+  },
   getBlogClassification (state) {                // 获取文章列表
     Axios.get(API.GET_BLOG_CLASSIFICATION, {
       params: {
