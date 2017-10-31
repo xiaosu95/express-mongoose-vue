@@ -167,7 +167,7 @@ export default {
         if (data.data.isSuccess) {
           sessionStorage.setItem('user', JSON.stringify(data.data.data));
           vm.$store.commit('setUser', data.data.data);
-          vm.$router.push({name: 'Chat'});
+          vm.$router.push({name: 'Menu'});
         } else {
           vm.$message.warning(data.data.msg);
         }
@@ -191,7 +191,7 @@ export default {
         if (data.data.isSuccess) {
           sessionStorage.setItem('user', JSON.stringify(data.data.data));
           vm.$store.commit('setUser', data.data.data);
-          vm.$router.push({name: 'Chat'});
+          vm.$router.push({name: 'Menu'});
         } else {
           vm.$message.warning(data.data.msg);
         }

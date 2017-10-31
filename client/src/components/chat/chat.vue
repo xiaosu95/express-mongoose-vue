@@ -109,6 +109,7 @@ export default {
       vm.socket.emit('join', vm.user.username);
     }, 1000)
     this.socket.on('getFriends', data => {
+      console.log(data)
       vm.getUserList(data);
     })
     this.socket.on('serverSend', data => {
@@ -121,12 +122,12 @@ export default {
       })
     })
     this.socket.on('systemNotice', data => {
+      vm.getSystemNotice();
       if (data.type === 'addFriend') {
         vm.$notify.info({
           title: '好友请求',
           message: `${data.info.nickname}想加你为好友`
         });
-        vm.getSystemNotice();
       } else if (data.type === 'system') {
         vm.$notify.info({
           title: '系统消息',
@@ -167,7 +168,7 @@ export default {
   computed: mapState({
     ...mapGetters([
     ]),
-    user: state => state.chat.user || {},
+    user: state => state.user || {},
     userList: state => state.chat.userList,
     nowChater: state => state.chat.nowChater,
     chatRecord: state => state.chat.chatRecord,

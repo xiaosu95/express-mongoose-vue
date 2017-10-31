@@ -5,6 +5,7 @@ const Chat = resolve => require(['@/components/chat/chat.vue'], resolve);
 const Blog = resolve => require(['@/components/blog/blog.vue'], resolve);
 const BlogList = resolve => require(['@/components/blog/blogList.vue'], resolve);
 const BlogContent = resolve => require(['@/components/blog/blogContent.vue'], resolve);
+const Menu = resolve => require(['@/components/menu/menu.vue'], resolve);
 
 Vue.use(Router);
 export default new Router({
@@ -13,6 +14,11 @@ export default new Router({
       path: '/',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/menu',
+      name: 'Menu',
+      component: Menu
     },
     {
       path: '/chat',

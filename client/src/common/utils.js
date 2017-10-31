@@ -24,5 +24,10 @@ export default {
   },
   removal: (arr) => {                   // 去重
     return Array.from(new Set(arr));
+  },
+  getUrlParam: (name) => {             // 获取url参数
+    var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)');
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURIComponent(r[2]); return null;
   }
 }

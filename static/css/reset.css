@@ -34,7 +34,7 @@ a {
 }
 @media (-webkit-max-device-pixel-ratio: 1){      /*美化滚动条*/
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
     height: 0;
   }
   ::-webkit-scrollbar-thumb {

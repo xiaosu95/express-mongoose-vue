@@ -22,7 +22,7 @@ router.post('/addFriend', checkLogin, (req, res, next) => {
       Information.create({
         username: targetUser,
         initiator: Initiator,
-        createTime: new Date(),
+        createTime: Date.now(),
         initiatorAvatar: data[0].avatar,
         type: 'addFriend'
       })
@@ -85,6 +85,7 @@ router.post('/verification', checkLogin, (req, res, next) => {
   const username = req.body.username;
   const targetUser = req.body.targetUser;
   const msgId = req.body.msgId;
+  console.log(username, targetUser)
   let sort = username > targetUser ? -1 : 1;
   Userdb.find({username: {$in: [username, targetUser]}}).sort({username: sort})
   .exec((err, data) => {
@@ -100,24 +101,26 @@ router.post('/verification', checkLogin, (req, res, next) => {
       Information.create({                                      // 添加系统消息
         username: targetUser,
         initiator: '系统',
-        createTime: new Date(),
+        createTime: Date.now(),
         type: 'system',
         msg: `${data[0].nickname}同意添加你为好友`
       })
+      setTimeout(function () {
+        getUserList([username, targetUser]);                  // 延时500ms推送最新列表
+      }, 500)
     } else {
       deleteArray(data[1].waitFriends, data[0].username);
       data[1].save();
       Information.create({                                      // 添加系统消息
         username: targetUser,
         initiator: '系统',
-        createTime: new Date(),
+        createTime: Date.now(),
         type: 'system',
         msg: `${data[0].nickname}拒绝添加你为好友`
       })
       socket.systemNotice(data[1].username, {info: `${data[0].nickname}拒绝添加你为好友`, type: 'system'});   // 在线推送
     }
     Information.remove({_id: msgId}, function () {});     // 删除该信息
-    getUserList([username, targetUser]);                  // 推送最新列表
     res.send({
       isSuccess: 1
     })

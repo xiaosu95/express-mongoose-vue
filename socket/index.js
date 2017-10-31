@@ -63,6 +63,7 @@ exports.systemNotice = function (user, text) {
 exports.getUserList = function (list) {
   list.forEach(ele => {
     Userdb.getFriends(socketList[ele].username).then(data => {
+      console.log(ele)
       socketList[ele].emit('getFriends', data);         // 获取好友列表
     })
   })

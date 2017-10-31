@@ -26,6 +26,7 @@
 
 <script type="text/javascript">
 import { mapMutations, mapState } from 'vuex'
+// import utils from '@/common/utils'
 import API from '@/common/api'
 export default {
   data () {
@@ -40,7 +41,7 @@ export default {
   },
   created () {
     let vm = this;
-    this.getBlogList(this.params);
+    vm.params.pageNum = Number(this.$route.query.page) || 1;
     this.$parent.$on('chooseMenu', type => {
       vm.params.type = type;
       vm.getBlogList(vm.params)
@@ -54,6 +55,12 @@ export default {
       'getBlogList'
     ]),
     handleCurrentChange (pageNum) {
+      this.$router.push({
+        name: 'BlogList',
+        query: {
+          page: pageNum
+        }
+      })
       this.params.pageNum = pageNum;
       this.getBlogList(this.params);
     },

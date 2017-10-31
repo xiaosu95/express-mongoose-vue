@@ -13,7 +13,12 @@
         ></el-autocomplete>
       </el-form-item>
     </el-form>
-    <div :id="_id" class="edit"></div>
+    <div id="my-editormd" >
+      <textarea id="my-editormd-markdown-doc" name="my-editormd-markdown-doc" style="display:none;"></textarea>
+      <!-- 注意：name属性的值-->
+      <textarea id="my-editormd-html-code" name="my-editormd-html-code" style="display:none;"></textarea>
+    </div>
+    <!-- <div :id="_id" class="edit"></div> -->
     <span slot="footer" class="dialog-footer">
       <el-button @click="editBlogDig = false">取 消</el-button>
       <el-button type="primary" @click="saveBlog">确 定</el-button>
@@ -36,6 +41,9 @@ export default {
         ]
       }
     }
+  },
+  mounted () {
+
   },
   methods: {
     saveBlog () {
