@@ -43,6 +43,12 @@ const mutations = {
         params.totalNum = data.data.totalNum;
       }
     })
+  },
+  // 获取七牛token
+  getQiniuToken () {
+    Axios.get(API.GET_QINIU_TOKEN).then(res => {
+      window.qiniuToken = res.data.data
+    })
   }
 }
 const actions = {

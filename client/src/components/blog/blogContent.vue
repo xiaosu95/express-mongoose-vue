@@ -39,7 +39,7 @@ export default {
       if (data.data.isSuccess) {
         this.blogContent = data.data.data;
         editormd.markdownToHTML('editormd-view', {
-          htmlDecode: 'style,script,iframe',  // you can filter tags decode
+          htmlDecode: 'style,script,iframe|on*',  // you can filter tags decode
           emoji: true,
           markdown: this.blogContent.markdown,
           taskList: true,
@@ -65,20 +65,23 @@ export default {
           vm.editormd = editormd('my-editormd', {
             width: '100%',
             height: 'calc(100% - 60px)',
+            htmlDecode: 'style,script,iframe|on*',
             syncScrolling: 'single',
-            path: '/static/editor.md/lib/',       // 注意2：你的路径
+            path: 'static/editor.md/lib/',       // 注意2：你的路径
             saveHTMLToTextarea: true,       // 注意3：这个配置，方便post提交表单
             emoji: true,         // emoji表情，默认关闭
             taskList: true,
             tocm: true,       // Using [TOCM]
             tex: true,        // 开启科学公式TeX语言支持，默认关闭
+            codeFold: true,
+            markdown: vm.blogContent.markdown,
             flowChart: true,        // 开启流程图支持，默认关闭
             sequenceDiagram: true,      // 开启时序/序列图支持，默认关闭,
             imageUpload: true,
             imageFormats: ['jpg', 'jpeg', 'gif', 'png'],
             imageUploadURL: '/blog/upload/',       // 注意你后端的上传图片服务地址
             onload: function () {
-              vm.editormd.setMarkdown(vm.blogContent.markdown)
+              // vm.editormd.setMarkdown(vm.blogContent.markdown)
             }
           });
         }, 100)
@@ -98,7 +101,17 @@ export default {
         if (data.data.isSuccess) {
           vm.$message.success('修改成功');
           vm.$refs.edit.editBlogDig = false;
-          vm.blogContent.content = vm.editormd.getHTML();
+          vm.blogContent.markdown = vm.editormd.getMarkdown();
+          vm.$el.querySelector('#editormd-view').innerHTML = `<textarea style="display:none;" name="test-editormd-markdown-doc"></textarea>`
+          editormd.markdownToHTML('editormd-view', {
+            htmlDecode: 'style,script,iframe',  // you can filter tags decode
+            emoji: true,
+            markdown: this.blogContent.markdown,
+            taskList: true,
+            tex: true,  // 默认不解析
+            flowChart: true,  // 默认不解析
+            sequenceDiagram: true  // 默认不解析
+          });
         } else {
           vm.$message.error('修改失败');
         }

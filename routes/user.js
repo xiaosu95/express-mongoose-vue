@@ -9,6 +9,7 @@ const fs = require('fs');
 
 // 注册
 router.post('/register', $upload('uploads/', ['png', 'jpg']).single('avatar'), (req, res) => {
+  console.log(123)
   const username = req.body.username;
   const nickname = req.body.nickname;
   const password = req.body.password;

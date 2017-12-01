@@ -12,7 +12,7 @@
 export default {
   methods: {
     goBlog () {
-      window.location.href = `${window.location.origin}?blogUser=${JSON.parse(sessionStorage.getItem('user')).username}#/blog`
+      window.location.href = `${window.location.origin + window.location.pathname}?blogUser=${JSON.parse(sessionStorage.getItem('user')).username}#/blog`
     }
   }
 }

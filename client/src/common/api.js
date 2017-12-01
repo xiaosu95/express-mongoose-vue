@@ -11,5 +11,6 @@ export default {
   GET_BLOG_LIST: '/blog/getBlogList',                              // 获取文章列表
   GET_BLOG_CONTENT: '/blog/getBlog_content',                     // 获取文章内容
   DELETE_BLOG: '/blog/deleteBlog',                               // 删除博文
-  GET_BLOG_USER: '/blog/getBolgUser'                            // 获取博主信息
+  GET_BLOG_USER: '/blog/getBolgUser',                            // 获取博主信息
+  GET_QINIU_TOKEN: '/blog/getQiniuToken'                        // 获取七牛token
 }

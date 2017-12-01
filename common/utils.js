@@ -1,4 +1,7 @@
 const multer = require('multer');
+const qiniuAccessKey = require('../config/default').qiniuAccessKey
+const qiniuSecretKey = require('../config/default').qiniuSecretKey
+const qiniu = require('qiniu')
 
 // 上传控制
 exports.$upload = function (path, fileType) {
@@ -48,4 +51,14 @@ exports.deleteArray = function (arr, item) {
 
 exports.removal = (arr) => {                   // 去重
 	return Array.from(new Set(arr));
+}
+
+// 生成七牛token
+exports.createQiniuToken = function (bucket) {
+	let mac = new qiniu.auth.digest.Mac(qiniuAccessKey, qiniuSecretKey);
+	let options = {
+		scope: bucket,
+	};
+	let putPolicy = new qiniu.rs.PutPolicy(options);
+	return putPolicy.uploadToken(mac);
 }

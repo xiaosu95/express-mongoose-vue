@@ -7,6 +7,7 @@ const $upload = require('../common/utils').$upload;
 const path = require('path');
 const fs = require('fs');
 const removal = require('../common/utils').removal;       // 去重
+const createQiniuToken = require('../common/utils').createQiniuToken    // 生成七牛tolen
 
 // 获取用户信息
 router.get('/getBolgUser', (req, res, next) => {
@@ -108,6 +109,15 @@ router.post('/upload', checkLogin, $upload('blogPhoto/', ['jpg', 'jpeg', 'gif', 
     success: 1,
     message: '上传成功',
     url: [req.file.path.split(path.sep).pop()]
+  })
+})
+
+// 获取七牛token
+router.get('/getQiniuToken', checkLogin, (req, res, next) => {
+  res.send({
+    isSuccess: 1,
+    message: '获取成功',
+    data: createQiniuToken('blog')
   })
 })
 

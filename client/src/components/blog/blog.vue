@@ -57,17 +57,19 @@ export default {
   },
   created () {
     let vm = this;
+    if (!window.qiniuToken) this.getQiniuToken();     // 获取七牛token
     this.$store.dispatch('userInit').then(function () {       // 初始化
       vm.$emit('chooseMenu', null);
       vm.getBlogClassification();
     });
   },
   mounted () {
-    $('#app').particleground();
+    // $('#app').particleground();
   },
   methods: {
     ...mapMutations([
-      'getBlogClassification'
+      'getBlogClassification',
+      'getQiniuToken'
     ]),
     scroll (e) {
       e.target.scrollTop > 100 ? this.showGoTop = true : this.showGoTop = false
@@ -85,8 +87,9 @@ export default {
           vm.editormd = editormd('my-editormd', {
             width: '100%',
             height: 'calc(100% - 60px)',
+            htmlDecode: 'style,script,iframe|on*',
             syncScrolling: 'single',
-            path: '/static/editor.md/lib/',       // 注意2：你的路径
+            path: 'static/editor.md/lib/',       // 注意2：你的路径
             saveHTMLToTextarea: true,       // 注意3：这个配置，方便post提交表单
             imageUpload: true,
             codeFold: true,
@@ -97,7 +100,7 @@ export default {
             flowChart: true,        // 开启流程图支持，默认关闭
             sequenceDiagram: true,      // 开启时序/序列图支持，默认关闭,
             imageFormats: ['jpg', 'jpeg', 'gif', 'png'],
-            imageUploadURL: '/blog/upload/'       // 注意你后端的上传图片服务地址
+            imageUploadURL: 'http://up-z2.qiniu.com/'       // 注意你后端的上传图片服务地址
           });
         }, 100)
       }
@@ -147,7 +150,7 @@ export default {
 }
 </script>
 
-<style media="screen" lang="scss">
+<style lang="scss">
 #blog {
   padding: 30px 30px 0;
   background: #eee;
@@ -200,7 +203,6 @@ export default {
   .main_r {
     width: calc(100% - 220px);
     position: relative;
-    z-index: 2;
     min-height: calc(100% - 30px);
     box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
     box-sizing: border-box;
@@ -230,6 +232,11 @@ export default {
     cursor: pointer;
     &:hover {
       opacity: 1;
+    }
+  }
+  .editormd-html-preview {
+    li {
+      list-style: initial;
     }
   }
 }

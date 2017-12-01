@@ -11,6 +11,7 @@ import store from './store/index.js'
 
 Vue.use(ElementUI)
 Vue.prototype.$axios = Axios
+Axios.defaults.baseURL = 'http://www.suyuanli.ink/xiaosu';
 Vue.config.productionTip = false
 Vue.use(VueLazyload, {
   error: './static/img/lazyload.png',

@@ -127,7 +127,8 @@
 
 				var fileInput  = dialog.find("[name=\"" + classPrefix + "image-file\"]");
 
-				fileInput.bind("change", function() {
+				fileInput.bind("change", function(e) {
+                    
 					var fileName  = fileInput.val();
 					var isImage   = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$"); // /(\.(webp|jpg|jpeg|gif|bmp|png))$/
 
@@ -143,40 +144,65 @@
 						alert(imageLang.formatNotAllowed + settings.imageFormats.join(", "));
 
                         return false;
-					}
-
+                    }
                     loading(true);
-
-                    var submitHandler = function() {
-
-                        var uploadIframe = document.getElementById(iframeName);
-
-                        uploadIframe.onload = function() {
-
+                    var file = e.target.files[0]
+                    var formData = new FormData();
+                    var key = Date.parse(new Date()) + '-' + parseInt(Math.random() * 10) + parseInt(Math.random() * 10) + parseInt(Math.random() * 10) + '.' + file.name.split('.').pop()
+                    formData.append('name', file.name);
+                    formData.append('chunk', 0);
+                    formData.append('chunks', 1);
+                    formData.append('key', key);
+                    formData.append('token', window.qiniuToken);
+                    formData.append('file', file);
+                    $.ajax({
+                        url: 'http://up-z2.qiniu.com/',
+                        type: 'post',
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        success: function (res) {
                             loading(false);
-
-                            var body = (uploadIframe.contentWindow ? uploadIframe.contentWindow : uploadIframe.contentDocument).document.body;
-                            var json = (body.innerText) ? body.innerText : ( (body.textContent) ? body.textContent : null);
-
-                            json = (typeof JSON.parse !== "undefined") ? JSON.parse(json) : eval("(" + json + ")");
-
-                            if(!settings.crossDomainUpload)
-                            {
-                              if (json.success === 1)
-                              {
-                                  dialog.find("[data-url]").val(json.url);
-                              }
-                              else
-                              {
-                                  alert(json.message);
-                              }
+                            if (res.key) {                 
+                                dialog.find("[data-url]").val('http://p0639a4mt.bkt.clouddn.com/' + res.key);
+                            } else {
+                                alert('上传失败')
                             }
-
                             return false;
-                        };
-                    };
+                        }
+                    })
+                    // loading(true);
 
-                    dialog.find("[type=\"submit\"]").bind("click", submitHandler).trigger("click");
+                    // var submitHandler = function() {
+
+                    //     var uploadIframe = document.getElementById(iframeName);
+
+                    //     uploadIframe.onload = function() {
+
+                    //         loading(false);
+
+                    //         var body = (uploadIframe.contentWindow ? uploadIframe.contentWindow : uploadIframe.contentDocument).document.body;
+                    //         var json = (body.innerText) ? body.innerText : ( (body.textContent) ? body.textContent : null);
+
+                    //         json = (typeof JSON.parse !== "undefined") ? JSON.parse(json) : eval("(" + json + ")");
+
+                    //         if(!settings.crossDomainUpload)
+                    //         {
+                    //           if (json.success === 1)
+                    //           {
+                    //               dialog.find("[data-url]").val(json.url);
+                    //           }
+                    //           else
+                    //           {
+                    //               alert(json.message);
+                    //           }
+                    //         }
+
+                    //         return false;
+                    //     };
+                    // };
+
+                    // dialog.find("[type=\"submit\"]").bind("click", submitHandler).trigger("click");
 				});
             }
 

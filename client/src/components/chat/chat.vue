@@ -99,7 +99,7 @@ export default {
   },
   mounted () {
     let vm = this;
-    this.socket = io.connect() // 与服务器进行连接
+    this.socket = io.connect(window.location.origin + ':3000') // 与服务器进行连接
     this.socket.on('error', () => {        // 连接失败
       vm.$message.error('请先登录');
       vm.$router.push({name: 'Login'});
